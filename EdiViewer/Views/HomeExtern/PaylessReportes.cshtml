@@ -1,0 +1,119 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Reportes";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Reportes semanales</h4>
+                </div>
+                <div class="card-body">
+                    <form id="formSearch">
+                        <div class="container div856Search">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <span id="spanClientName">
+                                        <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <br />
+                    <div class="clearfix"></div>
+                    <div id="gridReportes" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>    
+    var gridReportes = null;
+    var HashId = '';
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    var getClientName = new Promise(function (resolve, reject) {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientNow", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName').html(data.data);
+                $('#divSpinClientName').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    });
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridReportes',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetPaylessReportes", "Grids")',
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: "periodo", caption: "Desde", type: 'text' },
+                    { field: "periodoF", caption: "Hasta", type: 'text' },
+                    { field: "fechaGen", caption: "Fecha generación", type: 'text' }                    
+                ],
+                colShowResponsive: [
+                    { field: 'periodo' },
+                    { field: 'fechaGen' }
+                ],
+                columns: [
+                    { field: "id", caption: "id", sortable: true, hidden: true },
+                    { field: "periodo", caption: "Desde", sortable: true },
+                    { field: "periodoF", caption: "Hasta", sortable: true },
+                    { field: "fechaGen", caption: "Fecha generación", sortable: true },
+                    {
+                        field: "tipo", caption: "", sortable: true, render: function (record) {
+                            if (record.tipo == '0')
+                                return '<div class="w2ui-buttons"><a href="javascript:MakeExcelAutoRep(' + record.id + ', ' + record.tipo + ')">Descargar rep jueves</a></div>';
+                            else
+                                return '<div class="w2ui-buttons"><a href="javascript:MakeExcelAutoRep(' + record.id + ', ' + record.tipo + ')">Descargar rep domingo</a></div>';
+                        }
+                    }
+                ]
+            }
+        };
+        gridReportes = $('#gridReportes').w2grid(config.grid);
+        arrayGrids['gridExcelFile'] = gridReportes;
+    }
+    function MakeExcelAutoRep(idReporte, typ) {
+        window.open('@this.Url.Action("MakeExcelAutoRep", "HomeExtern")?IdM=' + idReporte + '&Typ=' + typ);
+    }    
+    $(document).ready(function () {        
+        $('.imgHeaderHelp').tooltip();
+        getClientName.then();
+        crearGrid();
+    });
+</script>

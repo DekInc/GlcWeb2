@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "GLC Web";
+    Layout = "_Layout";
+}
+<style>
+    body {
+        /*background-image: url('/images/fondo2.jpg');
+        background-repeat: no-repeat;*/
+        /*background-clip: padding-box;*/
+        /*background-repeat: no-repeat;*/
+        /*background-position-y: 100px;
+        background-position-x: center;*/
+        /*background-size: cover;*/
+    }
+</style>
+<script>
+    Push.create("Bienvenido a GLC Web", {
+    body: "Bienvenido a GLC Web",
+    icon: '/images/profile.png',
+    timeout: 5000,
+    onClick: function () {
+        window.focus();
+        this.close();
+    }
+    });
+    $.ajax({
+        method: "GET",
+        url: '@this.Url.Action("MakePaylessInvSnapshot", "HomeExtern")?ClienteId=1432'
+    });
+    $.ajax({
+        method: "GET",
+        url: '@this.Url.Action("MakePaylessInvSnapshot", "HomeExtern")?ClienteId=385'
+    });
+    $.ajax({
+        method: "GET",
+        url: '@this.Url.Action("MakeAutoReportsPayless", "HomeExtern")'
+    });
+    $.ajax({
+        method: "GET",
+        url: '@this.Url.Action("UpdateProductsLocal", "HomeExtern")'
+    });
+</script>
+<div class="container">    
+    <div class="jumbotron mainJumbo indexJumbo">
+        <h1 class="text-center"><b>Bienvenido al sistema GLC Web</b></h1>
+        <div class="divLogo"><img class="imgLogo" src="~/images/logo4Trans.png" /></div>
+        <br />
+        <div class="text-danger divCenter"><text class="textNotice">Por favor habilitar los mensajes de escritorio para que puedan recibir notificaciones del sistema.</text></div>
+    </div>
+</div>

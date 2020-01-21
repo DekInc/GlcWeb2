@@ -1,0 +1,133 @@
+﻿@using ComModels;
+@using ComModels.Models.EdiDB;
+@model EdiViewer.Models.EdiDetailModel
+
+@{
+    ViewData["Title"] = "Detalle de reporte 830 LEAR";
+}
+<style>
+    .card-header {
+        background-color: unset;
+        background: linear-gradient(35deg, rgb(65, 111, 170), rgb(122, 175, 243));
+        font-size: 12pt;
+        /*font-weight: unset !important;*/
+        color: unset !important;
+        text-shadow: unset !important;
+    }
+</style>
+
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header" data-togle="tooltip" data-html="true" title="@Model.Data.ListEdiSegName.Where(Sn => Sn.Segment == "ISA").Fod().DescEng">
+                    ISA - @Model.Data.ListEdiSegName.Where(Sn => Sn.Segment == "ISA").Fod().Eng
+                </div>
+                <div class="card-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm">
+                                <div class="SegmentDataCol">
+                                    @Html.ShowLabel("Data.ISA.InterchangeSenderId", Model.Data.ListCodes)
+                                    @Model.Data.ISA.InterchangeSenderId
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="SegmentDataCol">
+                                    @Html.ShowLabel("Data.ISA.InterchangeReceiverId", Model.Data.ListCodes)
+                                    @Model.Data.ISA.InterchangeReceiverId
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="SegmentDataCol">
+                                    @Html.ShowLabel("Data.ISA.InterchangeDate", Model.Data.ListCodes)
+                                    @Html.StrToDate(0, Model.Data.ISA.InterchangeDate, Model.Data.ISA.InterchangeTime)
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="SegmentDataCol">
+                                    @Html.ShowLabel("Data.ISA.InterchangeControlVersion", Model.Data.ListCodes)
+                                    @Model.Data.ISA.InterchangeControlVersion
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="SegmentDataCol">
+                                    @Html.ShowLabel("Data.ISA.InterchangeControlNumber", Model.Data.ListCodes)
+                                    @Model.Data.ISA.InterchangeControlNumber
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="SegmentDataCol">
+                                    @Html.ShowLabel("Data.GS.FunctionalIdCode", Model.Data.ListCodes)
+                                    @Html.CodeToStr("GS.FunctionalIdCode", Model.Data.GS.FunctionalIdCode, Model.Data.ListCodes)
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="SegmentDataCol">
+                                    @Html.ShowLabel("Data.ISA.UsageIndicator", Model.Data.ListCodes)
+                                    @Html.CodeToStr("ISA.UsageIndicator", @Model.Data.ISA.UsageIndicator, Model.Data.ListCodes)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="accordion" id="divAccor">
+                        @foreach (LearBfr830 Bfr in Model.Data.ListStBfr) {
+                            @await Html.PartialAsync("_DetailsOnBfr830",
+                           new Tuple<LearBfr830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
+                               Bfr,
+                               Model.Data.ListEdiSegName,
+                               Model.Data.ListCodes))
+                            <hr />
+                        }
+                        @if (Model.Data.ListStN1.Count() > 0) {
+                            <div class="card box-shadow">
+                                <div class="card-header card-cn1 cursor" data-toggle="collapse" data-target="#@Model.Data.ListStN1.Fod().HashId" aria-expanded="false" aria-controls="@Model.Data.ListStN1.Fod().HashId" title="@Model.Data.ListEdiSegName.Where(Sn => Sn.Segment == "N1").Fod().DescEng">
+                                    N1 - @Model.Data.ListEdiSegName.Where(Sn => Sn.Segment == "N1").Fod().Eng
+                                </div>
+                                <div class="collapse" id="@Model.Data.ListStN1.Fod().HashId">
+                                    <div class="card-body">
+                                        <div class="container">
+                                            @foreach (LearN1830 N1 in Model.Data.ListStN1) {
+                                                @await Html.PartialAsync("_DetailsOnN1830",
+                                                        new Tuple<LearN1830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
+                                                            N1,
+                                                            Model.Data.ListEdiSegName,
+                                                            Model.Data.ListCodes))
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                        }
+                        @foreach (LearN4830 N4 in Model.Data.ListStN4) {
+                            @await Html.PartialAsync("_DetailsOnN4830",
+                           new Tuple<LearN4830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
+                               N4,
+                               Model.Data.ListEdiSegName,
+                               Model.Data.ListCodes))
+                            <hr />
+                        }
+                        @foreach (LearNte830 Nte in Model.Data.ListStNte) {
+                            @await Html.PartialAsync("_DetailsOnNte830",
+                           new Tuple<LearNte830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
+                               Nte,
+                               Model.Data.ListEdiSegName,
+                               Model.Data.ListCodes))
+                            <hr />
+                        }
+                        @foreach (LearLin830 Lin in Model.Data.ListStLin) {
+                            @await Html.PartialAsync("_DetailsOnLin830",
+                            new Tuple<LearLin830, IEnumerable<EdiSegName>, EdiViewer.Models.EdiDetailModel>(
+                                Lin,
+                                Model.Data.ListEdiSegName,
+                                Model))
+                            <hr />
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

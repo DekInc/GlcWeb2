@@ -1,0 +1,180 @@
+﻿<div class="modal fade2" id="modalPopNewDis" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content modal-content-normal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel2"></h5>
+            </div>
+            <div class="modal-body">
+                <div id="divMensajePop2" class="container-fluid">
+                    <div class="row">
+                        <div class="col">
+                            Pedido para cliente 
+                            <span id="spanClientName3">
+                                <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>                    
+                    <div class="row">
+                        <div class="col">
+                            Por favor confirme los productos del pedido y la fecha del mismo
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label class="label" for="dtp2">Fecha y hora esperada</label><br />
+                            <input class="form-control datepicker" data-link-format="dd/mm/yyyy hh:ii" id="dtp2" maxlength="19" value="@(ViewBag.DateLastDis == null? string.Empty : ViewBag.DateLastDis)" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label for="cboTiendaDest">Tienda destino</label>
+                            <select id="cboTiendaDest" name="cboTiendaDest" class="form-control marginBottom10"></select>
+                            <span id="divSpinTiendaDest" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="container" id="divList">
+                                <div id="gridPedidoDet" style="min-height: 260px; width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="container text-center">
+                    @*<button type="button" class="btn btn-secondary" id="btnSaveDis">Guardar</button>*@
+                    <button type="button" class="btn btn-success" id="btnSendDis">Enviar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var domtblPedidos = null;
+    var gridPedidoDet = null;
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearGridDet() {
+        var config = {
+            grid: {
+                name: 'gridPedidoDet',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                records: mainGrid.allRecords.filter(R => R.cantPedir != 0),
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck(),
+                    toolbarInput: false
+                },
+                searches: [
+                    { field: "barcode", caption: "Cod. caja", type: 'text' },
+                    { field: "producto", caption: "Lote", type: 'text' },
+                    { field: "talla", caption: "Talla", type: 'text' },
+                    { field: "lote", caption: "Estilo", type: 'text' },
+                    { field: "categoria", caption: "Genero", type: 'text' },
+                    { field: "cp", caption: "cp", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'barcode' },
+                    { field: 'cantPedir' }
+                ],
+                columns: [
+                    { field: "id", caption: "id", sortable: true, hidden: true },
+                    { field: "barcode", caption: "Cod. caja", type: 'text', sortable: true },
+                    { field: "producto", caption: "Lote", type: 'text', sortable: true },
+                    { field: "talla", caption: "Talla", type: 'text', sortable: true },
+                    { field: "lote", caption: "estilo", type: 'text', sortable: true },
+                    { field: "categoria", caption: "Genero", type: 'text', sortable: true },
+                    { field: "cp", caption: "cp", type: 'text', sortable: true },
+                    { field: "cantPedir", caption: "Cantidad a pedir", sortable: true }
+                ]
+            }
+        };
+        gridPedidoDet = $('#gridPedidoDet').w2grid(config.grid);
+        arrayGrids['gridPedidoDet'] = gridPedidoDet;
+    }
+    function SaveSendDis(actionUrl, op1) {
+        if (mainGrid == null)
+            return;
+        if (mainGrid.allRecords == null)
+            return;
+        if (mainGrid.allRecords.length == 0)
+            return;
+        if (mainGrid.allRecords.filter(Pr => Pr.cantPedir != 0).length == 0)
+            return;
+        if ($('#dtp2').val() == '') {
+            //ModalPopNewDis.hide();
+            menErrorEdi('La fecha está vacia', 'Error');
+            return;
+        } else {
+            var checkDate = null;
+            funcbtnOkMessageBox = function () {
+                $('#divSpinFiltrar').hide();
+                var regSend = mainGrid.allRecords.filter(Pr => Pr.cantPedir != 0);
+                $.each(regSend, function (i, Pr) {
+                    Pr.dateProm = $('#dtp2').val();
+                });
+                $.ajax({
+                    method: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "JSON",
+                    url: actionUrl,
+                    data: JSON.stringify(regSend),
+                    success: function (json) {
+                        funcbtnOkMessageBox = function () { }
+                        if (json.info.codError != 0)
+                            menErrorEdi(json.info.mensaje, 'Error');
+                        else {                            
+                            miAlive();
+                            mainGrid.allRecords = [];
+                            $('#divSpinFiltrar').hide();
+                            mainGrid.searchReset(true);
+                            //mainGrid.reload2("this.Url.Action("GetPaylessProdPrioriInventario", "Grids")?dtpPeriodoBuscar=" + $('#cboPeriod').val());
+                            //menErrorEdi('Se ha creado el pedido.', 'Información');
+                            ModalPopNewDis.modal('toggle');
+                            menErrorEdi(json.info.mensaje);                            
+                        }
+                    },
+                    error: function (json) {
+                        menErrorEdi(json.mensaje, 'Error interno de la petición de JS');
+                    }
+                });
+            }
+            if (mainGrid.pedidosPendientes != null) {
+                if (mainGrid.pedidosPendientes.length != 0) {
+                    checkDate = mainGrid.pedidosPendientes.filter(O => O.fechaPedido.substr(0, 10) == $('#dtp2').val());
+                    if (checkDate) {
+                        if (checkDate.length > 0) {
+                            menErrorEdi('Ya existe un pedido para esa fecha de entrega.', 'Error');
+                            return;
+                        } else {
+                            funcbtnOkMessageBox();
+                        }
+                    }
+                }
+            }            
+            if (checkDate == null)
+                funcbtnOkMessageBox();
+        }
+    }
+    @*$('#btnSaveDis').on('click', function () {
+        SaveSendDis('@this.Url.Action("SetPedidoExterno", "HomeExtern")?cboPeriod=' + $('#cboPeriod').val(), 1);
+    });*@
+    $('#btnSendDis').on('click', function () {
+        SaveSendDis('@this.Url.Action("SendPedidoExterno", "HomeExtern")?CboPeriod=' + $('#dtp2').val() + '&TiendaIdDest=' + $('#cboTiendaDest').val(), 2);
+    });
+    $(document).ready(function () {
+        $('#dtp2').datetimepicker({ format: 'dd/mm/yyyy hh:ii' });
+        fillComboboxWithValue('#divSpinTiendaDest', '@this.Url.Action("GetStores", "HomeExtern")', '#cboTiendaDest', 'tiendaId', 'descr', 0);
+    });
+</script>

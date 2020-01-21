@@ -1,0 +1,119 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Crud usuarios";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Crud usuarios</h4>
+                </div>
+                <div class="card-body">
+                    <div id="gridUsuarios" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@await Html.PartialAsync("_PopChangeClientStore")
+<script>
+    var gridUsuarios = null;
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridUsuarios',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: "@this.Url.Action("GetUsers", "Account")",
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: 'codUsr', caption: 'Cod. usuario', type: 'text' },
+                    { field: 'nomUsr', caption: 'Nombre usuario', type: 'text' },
+                    { field: 'tiendaId', caption: 'Tienda', type: 'text' },
+                    { field: 'cliente', caption: 'Cliente', type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'ienetGroup' },
+                    { field: 'codUsr' }
+                ],
+                columns: [
+                    { field: "id", caption: "Id", sortable: true, hidden: true},
+                    { field: "idIenetGroup", caption: "IdIenetGroup", sortable: true, hidden: true},
+                    { field: "ienetGroup", caption: "Grupo", sortable: true, hidden: true},
+                    { field: "codUsr", caption: "Cod. usuario", sortable: true},
+                    { field: "nomUsr", caption: "Nombre usuario", sortable: true},
+                    { field: "clienteId", caption: "ClienteId", sortable: true, hidden: true },                    
+                    { field: "cliente", caption: "Cliente", sortable: true },
+                    { field: "tiendaId", caption: "Tienda", sortable: true, hidden: false },
+                    {
+                        field: "", caption: "", render: function (record) {
+                            return '<a href="javascript:changeClient(' + record.id + ', ' + record.clienteId + ')">Cambiar cliente</a> | <a href="javascript:changeStore(' + record.id + ', ' + record.tiendaId + ', ' + record.clienteId + ')">Cambiar tienda</a>';
+                        }
+                    }
+                ]
+            }
+        };
+        gridUsuarios = $('#gridUsuarios').w2grid(config.grid);
+        arrayGrids['gridUsuarios'] = gridUsuarios;
+    }
+    function changeClient(recId, clienteId) {
+        $('#modalPopChangeStoreLabel').html('Cambio de cliente');
+        $('#modalPopChangeStore').modal();
+        fillComboboxWithValue('#divSpinList', '@this.Url.Action("getClients", "HomeExtern")', '#cboList', 'clienteId', 'nombre', clienteId);
+        $('#btnPopChangeStoreLabelOk').unbind('click');
+        $('#btnPopChangeStoreLabelOk').on('click', function () {
+            makeAjaxPost('@this.Url.Action("ChangeUserClient", "HomeExtern")?IdUser=' + recId + '&ClienteId=' + $('#cboList').val(), function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje);
+                    return;
+                } else {
+                    menErrorEdi(data.data, 'Información');
+                    gridUsuarios.reload2('@this.Url.Action("GetUsers", "Account")');
+                }
+            });
+        });
+    }
+    function afterFillCombobox() { }
+    function changeStore(recId, tiendaId, clienteId) {
+        $('#modalPopChangeStoreLabel').html('Cambio de tienda');
+        $('#modalPopChangeStore').modal();
+        fillComboboxWithValue('#divSpinList', '@this.Url.Action("GetStores", "HomeExtern")?Clienteid=' + clienteId, '#cboList', 'tiendaId', 'descr', tiendaId);
+        $('#btnPopChangeStoreLabelOk').unbind('click');
+        $('#btnPopChangeStoreLabelOk').on('click', function () {
+            makeAjaxPost('@this.Url.Action("ChangeUserTienda", "HomeExtern")?IdUser=' + recId + '&TiendaId=' + $('#cboList').val(), function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje);
+                    return;
+                } else {
+                    menErrorEdi(data.data, 'Información');
+                    gridUsuarios.reload2('@this.Url.Action("GetUsers", "Account")');
+                }
+            });
+        });
+    }
+    $(document).ready(function () {
+        crearGrid();
+    });
+</script>
+
+

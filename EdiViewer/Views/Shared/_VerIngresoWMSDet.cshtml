@@ -1,0 +1,87 @@
+﻿<style>
+    .modal-content {
+        display: flex;
+        flex-direction: column;
+    }
+    .modalMessageBoxBody, .modalMessageBoxButtons {
+        background: rgb(250, 250, 250);
+    }
+</style>
+<div class="modal fade2" id="modalDetWms" tabindex="-1" role="dialog" aria-labelledby="DetWmsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content modalContentMessageBox">
+            <div class="modal-header">
+                <h5 class="modal-title" id="DetWmsModalLabel">Ver detalle de ingresos-salidas WMS</h5>
+                @*<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>*@
+            </div>
+            <div class="modal-body modalMessageBoxBody">
+                <div id="DetWmsModalContent">
+                    <div id="gridWmsDet" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+            <div class="modal-footer modalMessageBoxButtons">
+                <button id="btnOkMessageBoxDetWmsModal" type="button" class="btn btn-success btnModal" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#modalDetWms').on("shown.bs.modal", function () {
+        $('#btnOkMessageBoxDetWmsModal').css({ top: ($('#btnOkMessageBoxDetWmsModal').closest('div').height() - ($('#btnOkMessageBoxDetWmsModal').height())) * 0.466 + 'px' });
+        $('#btnOkMessageBoxDetWmsModal').focus();
+    });
+    var tblReportes = null;
+    var gridWmsDet = null;
+    var stopAsync = false;
+    var transaccionIdV = 0;
+    //function afterFillCombobox() {
+    //}
+    function crearGridDet() {
+        var config = {
+            grid: {
+                name: 'gridWmsDet',
+                selectType: 'row',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetIngresosWMSDet", "Grids")?TransaccionId=' + transaccionIdV,
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: 'noTransaccion', caption: 'NoTransaccion', type: 'text' },
+                    { field: 'nomUsr', caption: 'Nombre usuario', type: 'text' },
+                    { field: 'tiendaId', caption: 'Tienda', type: 'text' },
+                    { field: 'cliente', caption: 'Cliente', type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'ienetGroup' },
+                    { field: 'codUsr' }
+                ],
+                columns: [
+                    { field: "codProducto", caption: "Código producto", sortable: true, hidden: false },
+                    { field: "barcode", caption: "Barcode", sortable: true, hidden: false },
+                    { field: "tipoBulto", caption: "Tipo bulto", sortable: true, hidden: false },
+                    { field: "unidadMedida", caption: "Unidad de medida", sortable: true, hidden: false },
+                    { field: "cantidad", caption: "Cantidad", sortable: true, hidden: false },
+                    { field: "cp", caption: "Cp", sortable: true, hidden: false },
+                    { field: "categoria", caption: "Categoria", sortable: true, hidden: false },
+                    { field: "departamento", caption: "Departamento", sortable: true, hidden: false },
+                    { field: "producto", caption: "Producto", sortable: true, hidden: false },
+                    { field: "talla", caption: "Talla", sortable: true, hidden: false }
+                ]
+            }
+        };
+        gridWmsDet = $('#gridWmsDet').w2grid(config.grid);
+        arrayGrids['gridWmsDet'] = gridWmsDet;
+    }
+    function fillWmsDet() {
+        if (gridWmsDet == null)
+            crearGridDet();
+        else
+            gridWmsDet.reload2('@this.Url.Action("GetIngresosWMSDet", "Grids")?TransaccionId=' + transaccionIdV);
+    }
+</script>

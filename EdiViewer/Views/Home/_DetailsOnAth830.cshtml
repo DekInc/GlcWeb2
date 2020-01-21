@@ -1,0 +1,31 @@
+﻿@using ComModels;
+@using ComModels.Models.EdiDB;
+@model Tuple<LearAth830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <div class="SegmentDataCol">
+                @Html.ShowLabel("Data.ATH.ResourceAuthCode", Model.Item3)
+                @Html.CodeToStr("ATH.ResourceAuthCode", Model.Item1.ResourceAuthCode, Model.Item3)
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="SegmentDataCol">
+                @Html.ShowLabel("Data.ATH.StartDate", Model.Item3)
+                @Html.StrToDate(1, Model.Item1.StartDate)
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="SegmentDataCol">
+                @Html.ShowLabel("Data.ATH.Quantity", Model.Item3)
+                @Model.Item1.Quantity
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="SegmentDataCol">
+                @Html.ShowLabel("Data.ATH.EndDate", Model.Item3)
+                @Html.StrToDate(1, Model.Item1.EndDate)
+            </div>
+        </div>
+    </div>
+</div>

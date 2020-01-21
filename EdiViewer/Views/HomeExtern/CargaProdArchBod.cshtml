@@ -1,0 +1,509 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Carga de archivo de escaners de bodega";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Carga de archivo de escaners de bodega Payless&nbsp;<img class="imgHeaderHelp tP" src="~/images/help.png" title="Pantalla utilizada para cargar los archivos que bodega escaneo, si se carga un archivo diferente para el mismo periodo los datos serán substituidos. Al subir el archivo se creara uno nuevo para que se pueda introducir la información al WMS." alt="Pantalla utilizada para cargar los archivos que bodega escaneo, si se carga un archivo diferente para el mismo periodo los datos serán substituidos. Al subir el archivo se creara uno nuevo para que se pueda introducir la información al WMS."></h4>
+                </div>
+                <div class="card-body">
+                    <form id="formSearch">
+                        <div class="container div856Search">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <span id="spanClientName">
+                                        <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row margin5">
+                                <div class="col-sm">
+                                    <button class="btn btn-primary" type="button" id="btnUpload">
+                                        Cargar archivo
+                                        <div id="divSpinUploadFile" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <form id="formReportes" action=""></form>
+                    <div class="clearfix"></div>
+                    <br />
+                    <div id="gridScans" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@await Html.PartialAsync("_PopCargaArchBod")
+@await Html.PartialAsync("_PopCargaProdArchBodDet")
+@await Html.PartialAsync("_PopCargaProdArchBodDet2")
+<script>
+    var idProdArch = 0;
+    var tblReportes = null;
+    var mainGrid = null;
+    var gridRepDetD2 = null;
+    var gridRepDet1 = null;
+    var gridRepDet2 = null;
+    var gridRepDet3 = null;
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    var crearGrid1 = new Promise(function (resolve, reject) {
+        var config = {
+            grid: {
+                name: 'gridRepDet1',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=3',
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()                    
+                },
+                searches: [
+                    { field: "barcode", caption: "Cod. caja", type: 'text' },
+                    { field: "categoria", caption: "Genero", type: 'text' },
+                    { field: "cp", caption: "cp", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'barcode' },
+                    { field: 'categoria' }
+                ],
+                columns: [
+                    { field: "transporte", caption: "Transporte", sortable: true },
+                    { field: "barcode", caption: "Cod. caja", sortable: true },
+                    { field: "categoria", caption: "Genero", sortable: true },
+                    { field: "cp", caption: "cp", sortable: true }
+                ]
+            }
+        };
+        gridRepDet1 = $('#gridRepDet1').w2grid(config.grid);
+        arrayGrids['gridRepDet1'] = gridRepDet1;
+        resolve();
+    });    
+    var crearGrid2 = new Promise(function (resolve, reject) {
+        var config = {
+            grid: {
+                name: 'gridRepDet2',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=2',
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: "barcode", caption: "Cod. caja", type: 'text' },
+                    { field: "categoria", caption: "Genero", type: 'text' },
+                    { field: "cp", caption: "cp", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'barcode' },
+                    { field: 'categoria' }
+                ],
+                columns: [
+                    { field: "transporte", caption: "Transporte", sortable: true },
+                    { field: "barcode", caption: "Cod. caja", sortable: true },
+                    { field: "categoria", caption: "Genero", sortable: true },
+                    { field: "cp", caption: "cp", sortable: true }
+                ]
+            }
+        };
+        gridRepDet2 = $('#gridRepDet2').w2grid(config.grid);
+        arrayGrids['gridRepDet2'] = gridRepDet2;
+        if (resolve)
+            resolve();
+    });
+    var crearGrid3 = new Promise(function (resolve, reject) {
+        var config = {
+            grid: {
+                name: 'gridRepDet3',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=3',
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: "barcode", caption: "Cod. caja", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'barcode' }
+                ],
+                columns: [
+                    { field: "barcode", caption: "Cod. caja", sortable: true }
+                ]
+            }
+        };
+        gridRepDet3 = $('#gridRepDet3').w2grid(config.grid);
+        arrayGrids['gridRepDet3'] = gridRepDet3;
+        if (resolve)
+            resolve();
+    });
+    var getPeriods = new Promise(function (resolve, reject) {
+        $.ajax({
+            url: '@this.Url.Action("GetPaylessPeriodPriori", "HomeExtern")',
+            type: 'GET',
+            dataType: 'JSON',
+            success: function (json) {
+                if (json.info.codError != 0) {
+                    menErrorEdi(json.info.mensaje);
+                    return json.data;
+                }
+                $('#cboPeriod').empty();
+                $.each(json.data, function (indexI, itemO) {
+                    $('#cboPeriod').append($('<option>', {
+                        value: this,
+                        text: this,
+                        selected: false
+                    }));
+                });
+                getTransportes();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, '');
+                menErrorEdi(thrownError, '');
+            }
+        });
+        if (resolve)
+            resolve();
+    });
+    function getTransportes(){
+        if ($('#dtpPeriodoBuscar').val() == '') return;
+        $('#divSpinCboTransporte').show();
+        $.ajax({
+            url: '@this.Url.Action("GetTransportByPeriod", "HomeExtern")?Period=' + $('#cboPeriod').val(),
+            type: 'GET',
+            dataType: 'JSON',
+            success: function (json) {
+                $('#divSpinCboTransporte').hide();
+                if (json.info.codError != 0) {
+                    menErrorEdi(json.info.mensaje);
+                    return json.data;
+                }
+                $('#cboTransporte').empty();
+                $.each(json.data, function (indexI, itemO) {
+                    $('#cboTransporte').append($('<option>', {
+                        value: this.idTransporte,
+                        text: this.transporte,
+                        selected: false
+                    }));
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, '');
+                menErrorEdi(thrownError, '');
+            }
+        });        
+    }
+    var crearGrid = new Promise(function(resolve, reject){
+        var config = {
+            grid: {
+                name: 'gridScans',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),                
+                url: '@this.Url.Action("GetPaylessPeriodPrioriFile", "Grids")',
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: "clientName", caption: "Cliente", type: 'text' },
+                    { field: "periodo", caption: "Periodo", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'clientName' },
+                    { field: 'periodo' }
+                ],
+                columns: [
+                    { field: "id", caption: "Id", sortable: true, hidden: true },
+                    { field: "periodo", caption: "Periodo", sortable: true },
+                    {
+                        field: "transporte", caption: "Transporte", sortable: true, render: function (record) {
+                            if (record.typ == 0)
+                                return '<div>' + record.transporte + '</div>';
+                            else
+                                return '<div></div>';
+                        }
+                    },
+                    {
+                        field: "insertDate", caption: "Fecha de carga / actualización", sortable: true, render: function (record) {
+                            if (record.updateDate)
+                                return '<div>' + record.updateDate + '</div>';
+                            else
+                                return '<div>' + record.insertDate + '</div>';
+                        }
+                    },
+                    { field: "cantExcel", caption: "Cant Excel", sortable: true, size: '100px' },
+                    { field: "cantEscaner", caption: "Cant escaner", sortable: true, size: '100px' },
+                    {
+                        field: "Typ", caption: "Tipo", sortable: true, render: function (record) {
+                            if (record.typ == 0)
+                                return '<div>Ingreso</div>';
+                            else
+                                return '<div>Traslado</div>';
+                        }
+                    },
+                    { field: "porValid", caption: "Porc. validez", sortable: true },
+                    {
+                        field: "updateDate", caption: "", sortable: true, render: function (record) {
+                            return '<a class="tP" title="El archivo a descargar solo contiene los barcodes que coinciden." href="javascript:downloadWmsFile(' + "'" + record.periodo + "'" + ', ' + "'" + record.idTransporte + "'" + ', ' + record.typ + ', ' + record.id + ')">Archivo WMS</a>&nbsp;|&nbsp;<a href="javascript:verDetalle(' + record.id + ', ' + record.typ + ')">Ver detalle</a>';
+                        }
+                    }
+                ]
+            }
+        };
+        mainGrid = $('#gridScans').w2grid(config.grid);
+        arrayGrids['gridScans'] = mainGrid;
+        resolve();
+    });
+    var crearGridDet2 = new Promise(function (resolve, reject) {
+        var config = {
+            grid: {
+                name: 'gridRepDetD2',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetTransDif", "Grids")?IdM=' + idProdArch,
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: "barcode", caption: "Cod. caja", type: 'text' },
+                    { field: "categoria", caption: "Genero", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'barcode' },
+                    { field: 'categoria' }
+                ],
+                columns: [
+                    { field: "barcode", caption: "Cod. caja", sortable: true },
+                    { field: "categoria", caption: "Genero", sortable: true }
+                ]
+            }
+        };
+        gridRepDetD2 = $('#gridRepDetD2').w2grid(config.grid);
+        arrayGrids['gridRepDetD2'] = gridRepDetD2;
+        if (resolve)
+            resolve();
+    });
+    function downloadWmsFile(period, idTransport, typ, idM) {
+        if (typ == 0)
+            window.open('@this.Url.Action("MakeExcelWms1", "HomeExtern")?Period=' + period + '&IdTransport=' + idTransport + '&Typ=' + typ);
+        else
+            window.open('@this.Url.Action("MakeExcelWms1", "HomeExtern")?Period=' + period + '&IdTransport=' + idTransport + '&Typ=' + idM);
+    }
+    function verDetalle(idM, typ) {        
+        idProdArch = idM;
+        if (typ == 0) {
+            if (gridRepDet3 == null)
+                crearGrid3.then();
+            else
+                gridRepDet3.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=3');
+            $('#modalCargaProdArchBodDet').modal();
+        } else {
+            if (gridRepDetD2 == null)
+                crearGridDet2.then();
+            else
+                gridRepDetD2.reload2('@this.Url.Action("GetTransDif", "Grids")?IdM=' + idProdArch);
+            $('#modalTransDifDet').modal();
+        }
+        //$('#tab1').click();        
+    }
+    var getClientName = new Promise(function (resolve, reject) {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientNow", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName').html(data.data);
+                $('#divSpinClientName').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    });
+    $(document).ready(function () {
+        $('.tP').tooltip();
+        $('#cboTipo').val("0");
+        $('#dtpPeriodo').datepicker();
+        getClientName.then();
+        getPeriods.then();
+        crearGrid.then();        
+        $('#cboPeriod').on('change', function (Event) {
+            getTransportes();
+        });
+        $('#fUpload').on('change', function (event) {
+            var fullPath = $('#fUpload').val();
+            if (fullPath) {
+                var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+                var filename = fullPath.substring(startIndex);
+                if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                    filename = filename.substring(1);
+                }
+                $('#lblFile').text(filename);
+            }
+        });
+        $('#fUpload2').on('change', function (event) {
+            var fullPath = $('#fUpload2').val();
+            if (fullPath) {
+                var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+                var filename = fullPath.substring(startIndex);
+                if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                    filename = filename.substring(1);
+                }
+                $('#lblFile2').text(filename);
+            }
+        });
+        $('#btnUpload').on('click', function () {
+            $('#modalCargaArchBod').modal();
+        });
+        $('#cboTipo').on('change', function (Event) {
+            if ($('#cboTipo').val() == "0") {
+                $('#divArchEntrada').addClass('noShow');
+                $('#divPeriodo2').addClass('noShow');
+                $('#divPeriodo').removeClass('noShow');
+                $('#divTransporte').removeClass('noShow');
+                $('#lblFile').text('Archivo de entrada SPS');
+            } else {
+                $('#divArchEntrada').removeClass('noShow');
+                $('#divPeriodo2').removeClass('noShow');
+                $('#divPeriodo').addClass('noShow');
+                $('#divTransporte').addClass('noShow');
+                $('#lblFile').text('Archivo de salida SPS');
+                $('#lblFile2').text('Archivo de entrada TGU');
+            }
+        });
+        $('.nav-tabs a').on('shown.bs.tab', function (event) {
+            switch ($(event.target).attr('id')) {
+                case 'tab1':
+                    if (gridRepDet3 == null)
+                        crearGrid3.then();
+                    else
+                        gridRepDet3.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=3');                    
+                    break;
+                case 'tab2':
+                    if (gridRepDet2 == null)
+                        crearGrid2.then();
+                    else
+                        gridRepDet2.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=2');
+                    break;
+                case 'tab3':
+                    if (gridRepDet1 == null)
+                        crearGrid1.then();
+                    else
+                        gridRepDet1.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=1');
+                    break;
+                default:
+            }
+        });
+        $('#btnCargaArchBodOk').on('click', function () {
+            if ($('#cboPeriod').val() == '') {
+                menErrorEdi('El valor del periodo no puede estar vacio', 'Error');
+                return;
+            }
+            var filenameXml1 = $('#fUploadXml1').val();
+            var filenameXls1 = $('#fUploadXls1').val();
+            var filenameXml2 = $('#fUploadXml2').val();
+            var filenameXls2 = $('#fUploadXls2').val();
+            if (filenameXml1.length == 0 && filenameXls1.length == 0
+                && filenameXml2.length == 0 && filenameXls2.length == 0) {
+                menErrorEdi('Por favor seleccione un archivo de salida', 'Error');
+                return false;
+            }
+            $('#divSpinUploadFile').show();
+            var fdata = new FormData();
+            if (filenameXml1.length != 0) {
+                var fileUpload = $("#fUploadXml1").get(0);
+                var files = fileUpload.files;
+                fdata.append('1_' + files[0].name, files[0]);
+            }
+            if (filenameXls1.length != 0) {
+                var fileUpload = $("#fUploadXls1").get(0);
+                var files = fileUpload.files;
+                fdata.append('2_' + files[0].name, files[0]);
+            }
+            if (filenameXml2.length != 0) {
+                var fileUpload = $("#fUploadXml2").get(0);
+                var files = fileUpload.files;
+                fdata.append('3_' + files[0].name, files[0]);
+            }
+            if (filenameXls2.length != 0) {
+                var fileUpload = $("#fUploadXls2").get(0);
+                var files = fileUpload.files;
+                fdata.append('4_' + files[0].name, files[0]);
+            }            
+            $.ajax({
+                type: "POST",
+                url: '@this.Url.Action("SetPaylessPeriodPrioriFile", "HomeExtern")?CboPeriod=' + $('#cboPeriod').val() + '&IdTransporte=' + $('#cboTransporte').val() + '&cboTipo=' + $('#cboTipo').val() + '&dtpPeriodo=' + $('#dtpPeriodo').val(),
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                data: fdata,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    $('#divSpinUploadFile').hide();
+                    if (response.info.codError != 0) {
+                        if (response.info.codError != 0) {
+                            menErrorEdi(response.info.mensaje, 'Error en el proceso');
+                            return;
+                        }
+                    }
+                    if (response.length == 0)
+                        menErrorEdi('Error al subir el archivo', 'Error');
+                    else {
+                        if (response.info.codError == 0) {
+                            menErrorEdi('Archivo cargado', 'Información');
+                            mainGrid.reload2('@this.Url.Action("GetPaylessPeriodPrioriFile", "Grids")');
+                        }
+                        else {
+                            menErrorEdi('Error al subir el archivo', 'Error');
+                            mainGrid.reload();
+                        }
+                    }
+                },
+                error: function (resp) {
+                    $('#divSpinUploadFile').hide();
+                    menErrorEdi(resp.info.mensaje);
+                }
+            });
+        });
+        if (window.mobileAndTabletcheck()) {
+            $('.div856Search').css({ "max-width": "unset" });
+            $('#dtpPeriodoBuscar').css({ "width": "100%" });
+            $('.btn').css({ "margin-bottom": "10px" });
+            $('.btn').addClass('btn-block');
+            $("#tblReportes").hide();
+            $('.inputUpload').css({ "max-width": "84vw" });
+            $('.divUpload').css({ "max-width": "84vw" });
+        }
+    });
+</script>

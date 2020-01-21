@@ -1,0 +1,453 @@
+﻿@model ErrorModel
+@{
+    ViewData["Title"] = "Pedidos Payless";
+    Layout = "_Layout";
+}
+<style>
+    .div856Search {
+        padding: 6px !important;
+    }
+
+    .txtCantPedir {
+        background: rgba(234, 217, 205, 0.7);
+    }
+</style>
+<div id="mainDiv">
+    <form id="formNewDis" action="@this.Url.Action("SetNewDisPayless", "HomeExtern")" method="post" enctype="multipart/form-data">
+        <div class="container">
+            <div class="card-deck cardMain cardPayless">
+                <div class="card box-shadow">
+                    <div class="card-header card-header-payless">
+                        <h4 class="my-0 font-weight-normal">Pedidos Payless</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="container div856Search">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <span id="spanClientName">
+                                        <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <b>Horario programado de entrega:</b>
+                                    <span id="spanClientSchedule">
+                                        <span id="divSpinClientSchedule" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm" style="overflow: scroll; max-height: 60px;">
+                                    <span id="labelTemporada" style="display: none;"></span><br />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <span id="labelWarning" style="display: none; color:brown">(El tiempo de entrega será coordinado por el equipo de GLC)<br /></span>                                    
+                                    <label for="dtpFechaEntrega">Fecha esperada de entrega</label>&nbsp;
+                                    <input class="form-control datepicker" data-date-format="dd/mm/yyyy hh:ii" id="dtpFechaEntrega" name="dtpFechaEntrega" placeholder="dd/mm/yyyy HH:mm" maxlength="10" autocorrect="off" autocapitalize="off" autocomplete="off" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <div class="form-check margin5">
+                                        <input class="form-check-input" id="radFifo" name="radInvType" type="radio" checked="checked" value="fifo" />
+                                        <label class="form-check-label" for="radFifo">FIFO</label>
+                                    </div>
+                                    @*<div class="form-check margin5">
+                    <input class="form-check-input" id="radLifo" name="radInvType" type="radio" value="lifo" />
+                    <label class="form-check-label" for="radLifo">LIFO</label>
+                </div>*@
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-sm">
+                                    <button type="button" class="btn btn-primary" id="btnAll" data-togle="tooltip" data-html="true" title="">
+                                        Solicitar todo
+                                        <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                            <span class="sr-only">...</span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container-fluid divPedidoPaylessMain">
+                            <div class="row">
+                                <div class="col-sm colPedido">
+                                    <img src="~/images/woman2.jpg" class="pedidoPaylessIcon" />
+                                    <div class="divPedidoPaylessOverInfo">
+                                        <div class="divPedidoPaylessOverInfoContent">
+                                            <span class="overInfoContentTittle">Damas<br /></span>
+                                            <div class="overInfoContentContent">
+                                                CP: <span id="spanWomanCpQty"></span>
+                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                    <span class="sr-only">...</span>
+                                                </div>
+                                                <br />
+                                                Cant a pedir:
+                                                <input id="txtWomanQty" name="txtWomanQty" class="txtCantPedir" type="number" min="0" value="0" />
+                                                &nbsp;&nbsp;de&nbsp;&nbsp;
+                                                <span id="spanWomanQty" class="qty"></span>
+                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                    <span class="sr-only">...</span>
+                                                </div>
+                                                <div>
+                                                    Temporada:&nbsp;&nbsp;
+                                                    <input id="txtWomanQtyT" name="txtWomanQtyT" class="txtCantPedir txtCantPedirT" type="number" min="0" value="0" />
+                                                    &nbsp;&nbsp;de&nbsp;&nbsp;<span id="spanWomanQtyT" class="qty2"></span>
+                                                    <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                        <span class="sr-only">...</span>
+                                                    </div>
+                                                </div>
+                                                <button type="button" class="btn btn-primary btnTodos" style="height: 22px; font-size: 10pt; padding: 5px; padding-top: 1px; max-width: 92%;">&nbsp;T&nbsp;</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm colPedido">
+                                    <img src="~/images/man2.jpg" class="pedidoPaylessIcon" />
+                                    <div class="divPedidoPaylessOverInfo">
+                                        <div class="divPedidoPaylessOverInfoContent">
+                                            <span class="overInfoContentTittle">Caballeros<br /></span>
+                                            <div class="overInfoContentContent">
+                                                CP: <span id="spanManCpQty"></span>
+                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                    <span class="sr-only">...</span>
+                                                </div>
+                                                <br />
+                                                Cant. a pedir:
+                                                <input id="txtManQty" name="txtManQty" class="txtCantPedir" type="number" min="0" value="0" />
+                                                &nbsp;&nbsp;de&nbsp;&nbsp;
+                                                <span id="spanManQty" class="qty"></span>
+                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" type="number" style="display: none" role="status">
+                                                    <span class="sr-only">...</span>
+                                                </div>
+                                                <div>
+                                                    Temporada:&nbsp;&nbsp;
+                                                    <input id="txtManQtyT" name="txtManQtyT" class="txtCantPedir txtCantPedirT" type="number" min="0" value="0" />
+                                                    &nbsp;&nbsp;de&nbsp;&nbsp;<span id="spanManQtyT" class="qty2"></span>
+                                                    <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                        <span class="sr-only">...</span>
+                                                    </div>
+                                                </div>
+                                                <button type="button" class="btn btn-primary btnTodos" style="height: 22px; font-size: 10pt; padding: 5px; padding-top: 1px; max-width: 92%;">&nbsp;T&nbsp;</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm colPedido">
+                                    <img src="~/images/kids2.jpg" class="pedidoPaylessIcon" />
+                                    <div class="divPedidoPaylessOverInfo">
+                                        <div class="divPedidoPaylessOverInfoContent">
+                                            <span class="overInfoContentTittle">Niñ@s<br /></span>
+                                            <div class="overInfoContentContent">
+                                                CP: <span id="spanKidCpQty"></span>
+                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                    <span class="sr-only">...</span>
+                                                </div>
+                                                <br />
+                                                Cant. a pedir:
+                                                <input id="txtKidQty" name="txtKidQty" class="txtCantPedir" type="number" min="0" value="0" />
+                                                &nbsp;&nbsp;de&nbsp;&nbsp;
+                                                <span id="spanKidQty" class="qty"></span>
+                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                    <span class="sr-only">...</span>
+                                                </div>
+                                                <div>
+                                                    Temporada:&nbsp;&nbsp;
+                                                    <input id="txtKidQtyT" name="txtKidQtyT" class="txtCantPedir txtCantPedirT" type="number" min="0" value="0" />
+                                                    &nbsp;&nbsp;de&nbsp;&nbsp;<span id="spanKidQtyT" class="qty2"></span>
+                                                    <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                        <span class="sr-only">...</span>
+                                                    </div>
+                                                </div>
+                                                <button type="button" class="btn btn-primary btnTodos" style="height: 22px; font-size: 10pt; padding: 5px; padding-top: 1px; max-width: 92%;">&nbsp;T&nbsp;</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm colPedido">
+                                    <img src="~/images/acc2.jpg" class="pedidoPaylessIcon" />
+                                    <div class="divPedidoPaylessOverInfo">
+                                        <div class="divPedidoPaylessOverInfoContent">
+                                            <span class="overInfoContentTittle">Accesorios<br /></span>
+                                            <div class="overInfoContentContent">
+                                                CP: <span id="spanAccCpQty"></span>
+                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                    <span class="sr-only">...</span>
+                                                </div>
+                                                <br />
+                                                Cant. a pedir:
+                                                <input id="txtAccQty" name="txtAccQty" class="txtCantPedir" type="number" min="0" value="0" />
+                                                &nbsp;&nbsp;de&nbsp;&nbsp;
+                                                <span id="spanAccQty" class="qty"></span>
+                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                    <span class="sr-only">...</span>
+                                                </div>
+                                                <div>
+                                                    Temporada:&nbsp;&nbsp;
+                                                    <input id="txtAccQtyT" name="txtAccQtyT" class="txtCantPedir txtCantPedirT" type="number" min="0" value="0" />
+                                                    &nbsp;&nbsp;de&nbsp;&nbsp;<span id="spanAccQtyT" class="qty2"></span>
+                                                    <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                        <span class="sr-only">...</span>
+                                                    </div>
+                                                </div>
+                                                <button type="button" class="btn btn-primary btnTodos" style="height: 22px; font-size: 10pt; padding: 5px; padding-top: 1px; max-width: 92%;">&nbsp;T&nbsp;</button>
+                                            </div>                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <span id="spanTotal" class="font-weight-bold"></span>
+                        <br />
+                        <div class="container div856Search">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <button type="submit" class="btn btn-primary" id="btnNewDis" data-togle="tooltip" data-html="true" title="Seleccione los productos a pedir y acá click acá para solicitarlos">Crear pedido</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+        </div>
+    </form>
+</div>
+<script>
+    var ModalPopPeticionDet = null;
+    var domtblReportes = null;
+    var domtblPeticionDet = null;
+    var mainGrid = null;
+    var HashId = '';
+    var foo = function () {
+    }
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }    
+    function reDrawObjects() {
+        $('#spanClientName').css('display', 'block');
+        $('.btnTodos').css({ "margin-top": "10px" });
+        $('.btnTodos').addClass('btn-block');
+        if (window.mobileAndTabletcheck()) {
+            $('#spanClientName').css('text-align', 'center');
+            $('.pedidoPaylessIcon').width(window.outerWidth * 0.75);
+            $('.divPedidoPaylessOverInfo').width(window.outerWidth * 0.75);
+            $('.divPedidoPaylessMain').css('width', window.outerWidth * 0.90);
+            $('.colPedido').css('margin-top', '10px');
+            $('.divPedidoPaylessOverInfoContent').css('padding', 'unset');
+            $('.divPedidoPaylessOverInfo').width($('.pedidoPaylessIcon').width());
+            $('#dtpFechaEntrega').addClass('btn-block');
+            $('#dtpFechaEntrega').css('margin-bottom', '16px');
+            $('#dtpFechaEntrega').css('margin-top', '16px');
+            $('#dtpFechaEntrega').css('margin-top', 'unset');
+            $('.div856Search').css({ "max-width": "unset" });
+            $('#dtpFechaEntrega').css({ "width": "100%" });
+            $('.btnTodos').css({ "margin-bottom": "10px" });            
+            $('.divPedidoPaylessOverInfo').css({ "left": "unset" });
+            $('.btn').addClass('btn-block');
+        } else {
+            $('#spanClientName').css('margin-bottom', '10px');
+        }
+    }
+    function getClientName() {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientName", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName').html(data.data);
+                $('#divSpinClientName').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    }
+    function getClientSchedule() {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientNameScheduleById", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName').html(data.data.item1);
+                $('#divSpinClientName').hide();
+                $('#spanClientSchedule').html(data.data.item2);                
+                if (data.data.item4 === false)
+                    $('#labelWarning').show();
+                if (data.data.item3 != '') {
+                    $('#labelTemporada').html(data.data.item3);
+                    $('#labelTemporada').show();
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function loadPedido(pedidoId) {
+        alert(pedidoId);
+    }
+    @if (Model.Typ == 1) {
+        @:function funcbtnOkMessageBox() { window.location.href = '/HomeExtern/Peticiones'; }
+    }
+    function showQtys() {
+        $('.divSpinQty').show();        
+        $.ajax({
+            url: '@this.Url.Action("GetPaylessProdPrioriInventario3", "Grids")',
+            type: 'GET',
+            dataType: 'JSON',
+            success: function (json) {
+                $('.divSpinQty').hide();
+                if ($('#spanWomanQty').text() == '') $('#spanWomanQty').text('0');
+                if ($('#spanWomanCpQty').text() == '') $('#spanWomanCpQty').text('0');
+                if ($('#spanManQty').text() == '') $('#spanManQty').text('0');
+                if ($('#spanManCpQty').text() == '') $('#spanManCpQty').text('0');
+                if ($('#spanKidQty').text() == '') $('#spanKidQty').text('0');
+                if ($('#spanKidCpQty').text() == '') $('#spanKidCpQty').text('0');
+                if ($('#spanAccQty').text() == '') $('#spanAccQty').text('0');
+                if ($('#spanAccCpQty').text() == '') $('#spanAccCpQty').text('0');
+                if ($('#spanWomanQtyT').text() == '') $('#spanWomanQtyT').text('0');
+                if ($('#spanManQtyT').text() == '') $('#spanManQtyT').text('0');
+                if ($('#spanKidQtyT').text() == '') $('#spanKidQtyT').text('0');
+                if ($('#spanAccQtyT').text() == '') $('#spanAccQtyT').text('0');
+                $('.txtCantPedir').prop('disabled', false);
+                if (json.errorMessage != '') {
+                    menErrorEdi(json.errorMessage, 'Error en petición');
+                    return json.data;
+                }
+                if (json.records) {
+                    $('#btnAll').prop('disabled', false);
+                    $('#btnNewDis').prop('disabled', false);
+                    var total = 0;
+                    $.each(json.records, function (indexI, itemO) {
+                        switch (itemO.categoria) {
+                            case '0':
+                                if (itemO.cp == '0' && itemO.estado == '0')
+                                    $('#spanWomanQty').text(itemO.existencia);
+                                else if (itemO.cp == '1' && itemO.estado == '0')
+                                    $('#spanWomanCpQty').text(itemO.existencia);
+                                else if (itemO.cp == '0' && itemO.estado == '1')
+                                    $('#spanWomanQtyT').text(itemO.existencia);
+                                break;
+                            case '1':
+                                if (itemO.cp == '0' && itemO.estado == '0')
+                                    $('#spanManQty').text(itemO.existencia);
+                                else if (itemO.cp == '1' && itemO.estado == '0')
+                                    $('#spanManCpQty').text(itemO.existencia);
+                                else if (itemO.cp == '0' && itemO.estado == '1')
+                                    $('#spanManQtyT').text(itemO.existencia);
+                                break;
+                            case '2':
+                                if (itemO.cp == '0' && itemO.estado == '0')
+                                    $('#spanKidQty').text(itemO.existencia);
+                                else if (itemO.cp == '1' && itemO.estado == '0')
+                                    $('#spanKidCpQty').text(itemO.existencia);
+                                else if (itemO.cp == '0' && itemO.estado == '1')
+                                    $('#spanKidQtyT').text(itemO.existencia);
+                                break;
+                            case '3':
+                                if (itemO.cp == '0' && itemO.estado == '0')
+                                    $('#spanAccQty').text(itemO.existencia);
+                                else if (itemO.cp == '1' && itemO.estado == '0')
+                                    $('#spanAccCpQty').text(itemO.existencia);
+                                else if (itemO.cp == '0' && itemO.estado == '1')
+                                    $('#spanAccQtyT').text(itemO.existencia);
+                                break;
+                            default:
+                        }
+                    });                    
+                    total = parseInt($('#spanWomanQty').text()) + parseInt($('#spanManQty').text())
+                        + parseInt($('#spanKidQty').text()) + parseInt($('#spanAccQty').text()) + 
+                        parseInt($('#spanWomanCpQty').text()) + parseInt($('#spanManCpQty').text())
+                        + parseInt($('#spanKidCpQty').text()) + parseInt($('#spanAccCpQty').text())
+                        + parseInt($('#spanWomanQtyT').text()) + parseInt($('#spanManQtyT').text())
+                        + parseInt($('#spanKidQtyT').text()) + parseInt($('#spanAccQtyT').text());
+                    $('#spanTotal').text('Total en inventario con existencia ' + total);
+                    @if(ViewBag.PedidoIdToModify != 0)
+                    {
+                        @: loadPedido(@(ViewBag.PedidoIdToModify));
+                    }
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                if ($('#spanWomanQty').text() == '') $('#spanWomanQty').text('0');
+                if ($('#spanWomanCpQty').text() == '') $('#spanWomanCpQty').text('0');
+                if ($('#spanManQty').text() == '') $('#spanManQty').text('0');
+                if ($('#spanManCpQty').text() == '') $('#spanManCpQty').text('0');
+                if ($('#spanKidQty').text() == '') $('#spanKidQty').text('0');
+                if ($('#spanKidCpQty').text() == '') $('#spanKidCpQty').text('0');
+                if ($('#spanAccQty').text() == '') $('#spanAccQty').text('0');
+                if ($('#spanAccCpQty').text() == '') $('#spanAccCpQty').text('0');
+                menErrorEdi(xhr.status, '');
+                menErrorEdi(thrownError, '');
+            }
+        });
+    }
+    $('.txtCantPedir').prop('disabled', true);
+    $('#btnNewDis').prop('disabled', true);
+    $('#btnAll').prop('disabled', true);
+    $(document).ready(function () {
+        $('.imgHeaderHelp').tooltip();
+        //$('#dtpFechaEntrega').datepicker();
+        $('#dtpFechaEntrega').datetimepicker({ format: 'dd/mm/yyyy hh:ii' });
+        getClientSchedule();
+        showQtys();
+        reDrawObjects();
+        $('.txtCantPedir').on('keypress', function (Event) {
+            if (!isNumberKey(Event)) return false;
+            if ($(this).attr('readonly') != undefined)
+                return;
+            var cant = parseInt($($(this).closest('div').find('.qty')[0]).text());
+            if (isNaN(cant))
+                cant = parseInt($($(this).closest('div').find('.qty2')[0]).text());
+            var cantE = parseInt(Event.originalEvent.key);
+            if (parseInt($(this).val() + cantE) > cant)
+                return false;
+        });        
+        $('#btnAll').on('click', function (Event) {
+            if ($('#spanWomanQty').text() != '') $('#txtWomanQty').val($('#spanWomanQty').text());
+            if ($('#spanManQty').text() != '') $('#txtManQty').val($('#spanManQty').text());
+            if ($('#spanKidQty').text() != '') $('#txtKidQty').val($('#spanKidQty').text());
+            if ($('#spanAccQty').text() != '') $('#txtAccQty').val($('#spanAccQty').text());
+            if ($('#spanWomanQtyT').text() != '') $('#txtWomanQtyT').val($('#spanWomanQtyT').text());
+            if ($('#spanManQtyT').text() != '') $('#txtManQtyT').val($('#spanManQtyT').text());
+            if ($('#spanKidQtyT').text() != '') $('#txtKidQtyT').val($('#spanKidQtyT').text());
+            if ($('#spanAccQtyT').text() != '') $('#txtAccQtyT').val($('#spanAccQtyT').text());
+        });
+        $('.btnTodos').on('click', function (Event) {
+            $($(this).closest('div').find('.txtCantPedir')[0]).val($($(this).closest('div').find('.qty')[0]).text());
+            $($(this).closest('div').find('.txtCantPedirT')[0]).val($($(this).closest('div').find('.qty2')[0]).text());
+        });        
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {            
+            @: menErrorEdi('@Html.Raw(Model.ErrorMessage.Replace(Environment.NewLine, "<br />"))');
+        }        
+    });
+</script>

@@ -1,0 +1,69 @@
+﻿<div class="modal fade2" id="modalCargaTemporada" tabindex="-1" role="dialog" aria-labelledby="modalCargaTemporadaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content modal-content-normal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCargaTemporadaLabel">Carga de archivos</h5>
+            </div>
+            <div class="modal-body">
+                <div id="divModalCargaTemporadaContent">
+                    <form class="formSearch">
+                        <div class="container div856Search">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label for="cboTipo">Tipo</label>
+                                    <select class="form-control" id="cboTipo" name="cboTipo">
+                                        <option title="Ingreso" value="0">Producto</option>
+                                        <option title="Traslado" value="1">Talla</option>
+                                        <option title="Traslado" value="2">Lote</option>
+                                        <option title="Traslado" value="3">Categoría</option>
+                                        <option title="Traslado" value="4">Departamento</option>
+                                        <option title="Traslado" value="5">CP</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row justify-content-center maxWidth99">
+                                <fieldset class="col-10 col-md-12 px-3">
+                                    <legend>Archivo de entrada .xls</legend>
+                                    <div class="row justify-content-center">
+                                        <b>La columna A se lee, la primera celda no se lee, los datos deben comenzar en A2</b>                                        
+                                        <div class="form-group col-sm-9 col-lg-6">
+                                            <label class="pt-2" for="cost">Archivo .xls</label>
+                                            <div class="input-group">
+                                                <input type="file" class="" id="fUploadXls1" name="fUploadXls1" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <br />
+                            <div id="divArchEntrada" class="row justify-content-center maxWidth99 noShow">
+                                <fieldset class="col-10 col-md-12 px-3">
+                                    <legend>Archivo de salida (.xml o .xls)</legend>
+                                    <div class="row justify-content-center">
+                                        <div class="form-group col-sm-9 col-lg-6">
+                                            <label class="pt-2" for="price">Archivo .xml (prioritario)</label>
+                                            <div class="input-group">
+                                                <input type="file" class="" id="fUploadXml2" name="fUploadXml2" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-sm-9 col-lg-6">
+                                            <label class="pt-2" for="cost">Archivo .xls</label>
+                                            <div class="input-group">
+                                                <input type="file" class="" id="fUploadXls2" name="fUploadXls2" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>                            
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer text-center">
+                <button id="btnCargaTemporadaOk" type="button" class="btn btn-success btnModal" data-dismiss="modal">Guardar</button>
+                <button id="btnCargaTemporadaCancel" type="button" class="btn btn-success btnModal" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

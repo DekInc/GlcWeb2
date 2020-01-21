@@ -1,0 +1,182 @@
+﻿
+@{
+    ViewData["Title"] = "ManualUsuario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Manual de usuario</h2>
+
+
+PROPÓSITO
+El propósito del manual es indicar los pasos necesarios para el uso adecuado de la plataforma web y realizar pedidos por medios en la misma.
+INTRODUCCIÓN
+Este documento incluye las vistas de las pantallas para la plataforma web. La finalidad del sistema es realizar peticiones de producto del inventario disponible por tienda, el seguimiento de los pedidos ingresados y reportes relacionados con la trazabilidad de la operación.
+ALCANCE
+Este procedimiento tiene como alcance el uso de la plataforma para el cliente Payless.
+DEFINICIONES
+•	Pool Point: Es el lugar o bodega donde se reciben y almacenan los productos para su distribución en una determinada zona
+•	High priority (CP): El producto de alta prioridad se identifica en las cajas y dentro del sistema, e indica que debe ser despachado a la tienda de forma prioritaria y no necesita ser solicitado. El programa enviar siempre estos códigos asignados a las tiendas.
+•	SDR (Store Delivery Receipt), documento que se utilizar para identificar que se realizó el recibo de un despacho del Pool point, debe contener las cantidades exactas solicitadas por la tienda, si va una de más o menos se debe dejar especificada en esta hoja
+•	Divert: Proceso mediante el cual se cambia el destino de una carga, de una tienda a otra.
+
+
+
+
+
+RESPONSABILIDADES
+1.	Los encargados de tienda podrán solicitar pedidos extraordinarios, para entregas fuera de rutas, con solicitudes no menores a 24 horas. Sistema envía mensaje notificando que el pedido no puede ser entregado, si no cumple esta condición.
+2.	Encargados de bodega, son los responsables de despachar primeras entradas primeras salidas (FIFO), en base a pedidos solicitados por tienda e ingresos en el WMS.
+3.	El sistema genera un reporte de forma semanal, los jueves a la 1:00pm, que contiene la distribución de los pedidos realizados en las tiendas en el horario estipulado.
+4.	Los encargados de logística tendrán los permisos para realizar diverts y transfer cuando la operación lo requiera
+
+
+Pantalla de login
+
+El usuario y contraseña para ingresar al sistema pueden ser solicitados por correo electrónico a support.development@grupologistico.com.sv
+Flujo normal de uso para tiendas
+Creación de pedido
+La pantalla para ingresar está en el menú
+
+La vista para PC de la pantalla:
+
+La vista para celular es:
+
+Para ver todas las 4 categorías en el celular se debe hacer scroll down con el dedo.
+Pasos para crear pedido
+Click en el cuadro de “Fecha esperada de entrega”, se desplegará un calendario para seleccionar día y hora (formato militar) Dar click fuera.
+
+Se puede seleccionar la opción “solicitar todo”.
+
+El sistema auto completa todas las celdas con las cantidades por categoría. Nota: El sistema siempre incluirá en los pedidos los códigos CP “Códigos prioridad”, que se han parametrizado como prioridad en el sistema. También hay una subcategoría dentro del sistema, que son los productos de promoción que dentro del sistema se llaman “de temporada” los cuales la tienda podrá solicitar la cantidad que desee.
+Se tiene la opción de completar cantidades especificas por categoría. Y colocar dentro de cada una, cuando se requiere la cantidad de producto normal y cuando de producto promocional.
+El botón “T” sirve para tomar toda la existencia del producto por cada categoría.
+Una vez colocadas las cantidades, se da click en crear pedido. Se despliega un mensaje un mensaje resumen con las cantidades solicitadas por categoría y dar click en aceptar, para confirmar el pedido.
+
+Consulta de pedidos realizados
+Para ver los pedidos se tiene que ingresar a la opción de menú
+
+Luego de realizar el pedido se mostrará la pantalla de ordenes pendientes:
+
+Donde se puede solicitar el borrado de un pedido haciendo click en el enlace de borrar, si es borrado o no depende de los encargados de bodega, los estados de un pedido son:
+-	Pendiente: Cuando recién se realizó el pedido.
+-	Despachado: cuando el pedido fue despachado a la tienda.
+Ver detalle muestra los barcode de las cajas a enviar.
+Veamos la vista de celular:
+
+Donde no se muestra toda la información, pero si la más importante, el Id de la orden y la fecha esperada de entrega, para ver toda la información hacer tap en la cruz “+”, entonces la información se mostrará:
+
+Despachos realizados
+Para ver los despachos registrados entrar en la opción
+
+Estos son los despachos reales realizados desde bodega:
+
+El número de pedido es diferente al de GLCWeb, la fecha de pedido es la real en que se despacho hacía tiendas. Visto desde el celular tenemos:
+
+Para ver el detalle hacer click en el botón verde.
+
+Encuesta de entrega
+Está parte es la digitalización de la encuesta de satisfacción de entrega de pedido, para acceder a la opción se tiene el menú:
+
+Al llenar la encuesta es necesario ingresar el nombre, el número de pedido del cual se realiza la evaluación y SDR, todas las preguntas correspondientes:
+
+Flujo normal de uso para administradores de bodega
+Carga de archivos de DC
+Entrar al menú
+
+Se tiene la pantalla para consulta de archivos del DC cargados:
+
+Donde:
+1.	El periodo es el día en que entro contenedor.
+2.	El transporte es el código del contenedor.
+3.	Botón designado para buscar información cargada.
+4.	Reestablece el campo de periodo y transporte a sus valores iniciales.
+5.	Para agregar nuevo archivo de Excel.
+6.	Para ver solo las cajas cargadas en el sistema.
+7.	Para visualizar los periodos cargados en el sistema.
+Para ingresar un nuevo archivo al sistema hacer click en el botón “Cargar archivo Excel”, aparecerá la siguiente pantalla:
+
+El periodo es la fecha en que entro el contenedor, este no lo vera el cliente de Payless, luego tenemos el número de transporte o código del contenedor, el archivo de Excel puede estar en versiones del 2003 al 2019, se puede ingresar múltiples transportes para un solo periodo, solo es necesario no chequear el combo de “borrar todo el periodo”, porque si se selecciona esa opción se borrara primero todo el periodo y todos los archivos cargados para ese periodo y luego se cargara uno nuevo.
+Carga de archivos de escaners para ingresos y traslados
+Para entrar a la pantalla se tiene la opción del menú
+
+La pantalla de consulta de ingresos y traslados es la siguiente:
+
+La columna “Cant Excel” es el total de registros del archivo de DC para el periodo y el transporte, la columna “Cant escaner” es el total de registros únicos dentro del archivo del escáner cargado, el porcentaje de validez determina si el archivo cargado contiene los mismos productos que Payless detallo para él envió en cuestión. Para cargar un nuevo archivo es necesario dar click en el botón “Cargar archivo”, se tienen dos pantallas diferentes dependiendo del tipo de carga, si es de ingreso o traslado:
+
+El periodo es cuando ingreso el contenedor, el archivo de entrada es el resultado de escanear todo el producto que recién se incorporó a la bodega.
+
+En el caso de traslados el periodo es la fecha del movimiento del producto, el archivo de salida de la bodega y el archivo de entrada a la segunda bodega, los dos son archivos de escáner resultantes de la aplicación móvil de Payless.
+A partir de cada carga correcta y en los productos que están en el archivo de Excel y los escaneados se puede obtener el archivo de entrada de cajas del wms utilizando el enlace respectivo:
+
+En enlace de “Ver detalle” nos proporciona la información pertinente para determinar:
+-	“Escaneado y no encontrado en Excel”, es decir que que se ha registrado una caja que no estaba planeada que llegara.
+-	“En Excel y no escaneado”, para los productos planificados pero que no venían en el contenedor.
+-	“En Excel y escaneado”, producto planificado y escaneado.
+
+Ingresar productos al inventario
+Para ingreso de productos al WMS tenemos la siguiente opción de menú:
+
+Es necesario utilizar la misma planilla generada por el sistema web, solo se pueden introducir productos con bulto igual a uno para diferentes bodegas de cualquier país:
+
+Despachar productos del inventario
+La opción de menú que nos permite hacer salidas de inventario basadas en archivos de escáner es:
+
+Se pueden realizar dos tipos de salidas, una para tiendas y otra entre bodegas, que sería un traslado.
+
+El periodo es la fecha de la salida o traslado de la carga.
+Ver entrada y salidas de inventario
+Para visualizar la pantalla se tiene el menú:
+
+En la pantalla se pueden visualizar las entradas y salidas de inventario en el software wms:
+
+
+Ver lista de pedidos pendientes
+Para visualizar los pedidos realizados por las tiendas se tiene la opción de menú:
+
+La pantalla de ordenes pendientes permite visualizar:
+-	Si el pedido ha sido asignado o no a un despacho del sistema WMS.
+-	La tienda que ha realizado el pedido.
+-	Fecha y hora esperaba del pedido.
+-	Tienda de destino para cuando el pedido es un Divert normal o especifico.
+-	El estado del pedido
+-	La cantidad digitada por el usuario para cada categoría y para las categorías de temporada.
+-	El total de producto con prioridad CP.
+-	La cantidad total de producto en existencia.
+-	Cuando el pedido ha sido asignado a un despacho del WMS entonces la columna “porcentaje de validez” determina la exactitud de lo despachado en relación con lo pedido.
+-	Divert es cuando se tomo el producto de otras tiendas para enviarlo a una sola.
+-	Full significa que el usuario pidió todo el inventario disponible.
+
+Pedidos borrados
+La opción para ver los pedidos eliminados está en el menú
+
+Es una pantalla informativa de los pedidos borrados, la visualización depende del cliente de cada usuario.
+
+Reportes
+Inventario por tienda
+
+
+La pantalla muestra el inventario total del wms por cada categoría, la cantidad de producto solicitado y la resta que sería lo disponible.
+Snapshot de inventario
+
+Una fotografía del inventario de Payless es tomada cada día entre las 09:00hs y las 09:30hs, la clasificación además posee bodega, así se puede conocer si hay producto que no se ha despachado a su respectiva localización.
+
+Estado de pedidos en el WMS
+Se pueden obtener las salidas de las bodegas y el detalle a través de la opción:
+
+Además de la información del WMS se tiene la tienda relacionada a la salida del WMS, los despachos con factura además incluyen el número de factura de entrada del producto.
+
+Reporte de encuestas
+Para visualizar el Excel de valores en los que se basan los gráficos enviados a Payless, se tiene la siguiente pantalla
+
+Pedidos especiales
+Divert
+Para realizar un pedido para mover producto que fue destinado a una tienda diferente usamos la siguiente opción de menú:
+
+
+
+
+
+
+
+
+

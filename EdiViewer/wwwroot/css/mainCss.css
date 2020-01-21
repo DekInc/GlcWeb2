@@ -1,0 +1,845 @@
+﻿* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+    background-color: rgb(231, 225, 232);
+    line-height: 16pt;
+    font-size: 10pt;
+}
+
+/* Wrapping element */
+/* Set some basic padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Carousel */
+.carousel-caption p {
+    font-size: 20px;
+    line-height: 1.4;
+}
+
+/* QR code generator */
+#qrCode {
+    margin: 15px;
+}
+
+/* Hide/rearrange for smaller screens */
+@media screen and (max-width: 767px) {
+    /* Hide captions */
+    .carousel-caption {
+        display: none;
+    }
+}
+
+#mainDiv {
+    width: 99vw;
+    left: 0;
+    position: absolute;
+}
+.mainDiv2 {
+    box-sizing: border-box;
+    width: unset !important;
+    left: 0;
+    position: relative !important;
+}
+
+.jumbotron {
+    border-top: 1px solid rgb(212, 206, 214);
+    border-left: 1px solid rgb(212, 206, 214);
+    border-radius: 20px !important;
+    background: linear-gradient(#eee, rgb(232, 232, 252)) !important;
+}
+
+#tblReportes, .tblReportes, .tblPedidos, #tblPeticionDet {
+    width: 100%;
+    /*min-width: 60vw;*/
+    max-width: 99vw;
+    text-align: left;
+    display: table;
+}
+#formReportes {
+    max-width: 99vw;
+}
+table{
+    max-width: 98vw;
+}
+.card-deck {
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    margin-bottom: 25px;
+}
+.table:before {
+    content: '\A';
+}
+.imgHeaderHelp {
+    display: inline-block;
+    box-sizing: border-box;
+    height: 24px;
+}
+.imgHeaderHelp:hover {
+    cursor: pointer;
+}
+.dataTables_scrollHeadInner {
+    box-sizing: border-box !important;
+}
+.tblReportes thead tr, .tblPedidos thead tr {
+    background: linear-gradient(35deg, rgb(218, 148, 51), rgb(255, 185, 88));
+}
+
+.tblReportes tbody, .tblPedidos tbody {
+    cursor: pointer;
+}
+
+.container {
+    width: 100% !important;
+    max-width: unset;
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.tblDetails {
+    width: 100%;
+    border: 1px solid #000;
+}
+
+.SegmentDataCol {
+    border: 0px solid #999;
+}
+
+.cardMain {
+    margin-top: 10px;
+}
+.cardPayless{
+
+}
+
+.box-shadow {
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, .05);
+}
+
+label {
+    font-weight: bold;
+}
+
+.footer2 {
+    background: linear-gradient(35deg, rgb(65, 111, 170), rgb(122, 175, 243));
+    font-weight: bold;
+    font-style: italic;
+    max-width: 100vw;
+}
+
+.btn-link {
+    text-decoration: none;
+    font-weight: bold;
+    color: #000;
+}
+
+.card {
+    margin-bottom: 10px !important;
+}
+
+.card-header {
+    background-color: unset;
+    background: linear-gradient(35deg, rgb(65, 111, 170), rgb(122, 175, 243));
+    font-size: 16pt;
+    font-weight: bold !important;
+    color: #FFF !important;
+    text-shadow: 2px 2px #222;
+}
+.cardHeaderTable {
+    background-color: unset;
+    background: linear-gradient(35deg, rgb(200, 168, 137), rgb(230, 198, 167));
+    font-size: 13pt;
+    font-weight: bold;
+}
+.divInfoGen{
+    line-height: 1.8666em;
+}
+.tblTransportist {
+    min-width: 460px;
+}
+.cardTransportist{
+    /*max-width: 70%;*/
+}
+.bg-dark {
+    position: absolute !important;
+    max-width: 100vw;
+}
+h4 {
+    font-size: 16pt;
+    font-weight: bold;
+}
+.card-cbfr {
+    background-color: unset;
+    background: linear-gradient(35deg, rgb(65, 111, 170), #e6f9fe);
+}
+
+.card-clin {
+    background-color: unset;
+    background: linear-gradient(35deg, rgb(65, 111, 170), #e6f9fe);
+}
+
+.card-cn1 {
+    background-color: unset;
+    background: linear-gradient(35deg, rgb(65, 111, 170), #e6f9fe);
+}
+
+.card-cn4 {
+    background-color: unset;
+    background: linear-gradient(35deg, rgb(65, 111, 170), #e6f9fe);
+}
+
+.card-cnte {
+    background-color: unset;
+    background: linear-gradient(35deg, #fde4b3, #ffe7b3);
+}
+
+.card-cuit {
+    background-color: unset;
+    background: linear-gradient(35deg, rgb(65, 111, 170), #e6f9fe);
+}
+
+.card-cprs {
+    background-color: unset;
+    background: linear-gradient(35deg, #fac04d, #faf07d);
+}
+
+.card-csdp {
+    background-color: unset;
+    background: linear-gradient(35deg, rgb(218, 148, 51), rgb(241, 224, 203));
+}
+
+.card-cfst {
+    background-color: unset;
+    background: linear-gradient(35deg, rgb(65, 111, 170), rgb(255, 255, 255));
+}
+
+.card-cath {
+    background-color: unset;
+    background: linear-gradient(35deg, rgb(218, 148, 51), rgb(241, 224, 203));
+}
+
+.card-cshp {
+    background-color: unset;
+    background: linear-gradient(35deg, rgb(218, 148, 51), rgb(241, 224, 203));
+}
+
+.card-cref {
+    background-color: unset;
+    background: linear-gradient(35deg, #fcd280, #fcf2b0);
+}
+
+.cursor {
+    cursor: pointer;
+}
+
+hr {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.hide_column {
+    display: none;
+}
+
+.SegmentDataCol label::after {
+    content: "\A";
+}
+
+.dtColName {
+    font-weight: bold;
+}
+
+.separator {
+    border-bottom: 1px solid #999;
+    line-height: 1.5em;
+}
+
+.rowOdd {
+    background: #f3eac9;
+}
+
+#cbTo {
+    max-width: 320px;
+}
+
+.text-wrap {
+    white-space: normal;
+}
+
+.width-200 {
+    width: 280px;
+}
+/*Bugfix Jquery.DataTables*/
+.dataTables_scrollHead, .dataTables_scrollHeadInner, .dataTables_scrollBody {
+    /*display: table;*/
+    border: unset;
+}
+
+table.dataTable thead th, table.dataTable thead td {
+    border-bottom: unset;
+}
+
+.divAjax {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    width: 230px;
+    height: 100px;
+    margin: 0 auto;
+    border: 1px solid #000;
+    font-weight: bold;
+    color: #fff;
+    padding-top: 15px;
+    padding-bottom: 5px;
+    z-index: 1000;
+    display: block;
+    position: relative;
+    background: linear-gradient(rgb(0, 0, 0), rgba(255, 232, 252, 0.5)) !important;
+}
+
+.hideCol {
+    display: none;
+}
+
+.mainJumbo {
+    /*width: 98vw;*/
+    height: 90vh;
+    /*background-color: unset !important;*/
+    /*background: rgba(124, 143, 170, 0.60) !important;*/
+}
+.indexJumbo {
+    height: 80vh;
+    width: 90%;
+    margin: 0 auto;
+    box-sizing: border-box;
+    /*background: rgb(241, 224, 203);*/
+}
+
+.cardLogin {
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.imgLogo {
+    box-sizing:border-box;
+    /*width: 20%;*/
+    max-width: 35vh;
+    margin: 0 auto;
+}
+.imgLogoExtern{    
+    height: 36px;
+}
+
+.divLogo {
+    box-sizing: border-box;
+    width: 100%;
+    display: inline-block;
+    position: relative;
+    margin: 0 auto;
+    padding-bottom: 16px;
+    text-align: center;
+}
+
+.modal-header {
+    background: linear-gradient(35deg, #4b7099, #7ba0c9);
+}
+.modal-footer{
+    display: block;
+}
+.colPopButton{
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+#divMensajePop1 {
+    font-size: 12pt;
+    box-sizing: border-box;
+    width: 100%;
+    overflow: auto;
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: row;
+}
+.modal-content-normal {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.modal-body {
+    box-sizing: border-box;
+    /*width: 73%;*/
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+}
+
+.fade2 {
+    transform: scale(0.9);
+    opacity: 0;
+    transition: all .2s linear;
+    /*display: block !important;*/
+}
+
+.fade2.show {
+    opacity: 1;
+    transform: scale(1);
+}
+
+#divSpin1 {
+    box-sizing: border-box;
+}
+
+.font-size-12 {
+    font-size: 12pt;
+}
+
+.divComments {
+    margin-bottom: 10px;
+}
+
+/*Accordion*/
+.project-tab #tabs {
+    background: #007b5e;
+    color: #eee;
+}
+.project-tab #tabs h6.section-title {
+    color: #000;
+}
+
+.project-tab #tabs .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    color: #000;
+    /*background-color: transparent;
+    border-color: transparent transparent #f3f3f3;
+    border-bottom: 3px solid !important;
+    font-size: 16px;
+    font-weight: bold;*/
+}
+
+.project-tab .nav-link:hover {
+    border: none;
+}
+
+.project-tab thead {
+    background: #f3f3f3;
+    color: #333;
+}
+
+.project-tab a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+}
+
+.tblReportes div, .divBoxsize div, .tblPedidos div {
+    box-sizing: border-box;
+}
+
+.panel830 {
+    background: #999;
+    border: 1px solid #000;
+}
+.tblReportes tbody tr:hover, .tblPedidos tbody tr:hover {
+    background-color: #acbad4 !important;
+}
+.sorting_1 {
+    background-color: unset !important;
+}
+.margin5{
+    margin-top: 5px;
+}
+.noBorder {
+    border: 0px solid #FFF;
+}
+/* Colores institucionales */
+.btn {
+    font-style: italic;
+}
+.btn-primary {
+    background-color: unset !important;
+    background: linear-gradient(35deg, #4b7099, rgb(65, 111, 170));
+}
+.btn-info {
+    /*background-color: rgb(218, 148, 51) !important;*/
+    background-color: unset !important;
+    background: linear-gradient(35deg, rgb(218, 148, 51), rgb(255, 185, 88));
+}
+.bg-dark {
+    background-color: unset !important;
+    background: linear-gradient(35deg, rgb(15, 61, 120), rgb(65, 111, 170));
+    font-style: italic;
+    border-bottom: 2px solid #999;
+}
+.nav-link {
+    border-left: 1px dashed rgb(15, 61, 120);
+    border-right: 1px dashed rgb(15, 61, 120);
+}
+.nav-link:hover {
+    border-left: 1px dashed #fcd280;
+    border-right: 1px dashed #fcd280;
+}
+.navbar-brand {
+    font-size: 20pt;
+    font-weight: bold;
+    text-shadow: 2px 2px #222;
+}
+.divMainExtern {
+    margin-top: 20px;
+    margin-bottom: 40px;
+    width: 99vw;
+    left: 0;
+    position: absolute;
+}
+.imgProfile {
+    width: 40px;
+    height: 40px;
+}
+#btnNewDis{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.txtCantPedir {
+    width: 60px;
+    border: unset !important;
+    margin-top: -3px !important;
+    padding: unset !important;
+    outline-color: unset !important;
+    border-radius: unset !important;
+    border-color: unset !important;
+    box-shadow: unset !important;
+    font-size: 12pt !important;
+}
+.txtCantPedirT {
+    width: 60px;
+    margin-top: 8px !important;
+}
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child:before, table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th:first-child:before {
+    font-size: 18pt;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    text-align: center;
+    border: 0px solid #000;
+    line-height: 0.93;
+    z-index: 6;
+    display: block;
+    position: absolute;
+    float: left;
+    margin-right: 6px;
+}
+table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before, table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before {
+    font-size: 18pt;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    text-align: center;
+    border: 0px solid #000;
+    line-height: 0.93;
+    z-index: 6;
+    display: block;
+    position: absolute;
+    float: left;
+    margin-right: 6px;
+}
+.pagination {
+    /*position: absolute;*/
+}
+.dt-bootstrap4 .col-md-5{
+    flex: unset !important;
+    max-width: unset !important;
+}
+.dataTables_paginate {
+    display: inline-block;
+}
+#dtp2{
+    width: 200px;
+}
+.dtp3 {
+    width: 200px;
+}
+#dtpPeriodoBuscar {
+    width: 200px;
+}
+.noShow {
+    display: none;
+}
+.dropdown-menu {
+    background-color: rgb(88, 111, 141);
+    border: unset !important;
+}
+.dropdown-item {
+    font-size: 13pt !important;
+    /*font-style: italic !important;*/
+    color: #FFF !important;
+    margin-bottom: 6px;
+    margin-top: 6px;
+}
+.dropdown-item:hover, .dropdown-menu:hover {
+    color: #F00 !important;
+}
+.imgButton{
+    height: 22px;
+}
+.modalMessageBoxBody, .modalMessageBoxButtons {
+    background: rgb(154, 190, 230);
+}
+.modalContentMessageBox{
+    background: unset !important;
+    border: unset !important;
+}
+.modal-header {
+    border: unset !important;
+    border-radius: unset !important;
+}
+.modal-footer {
+    border: unset !important;
+    border-radius: unset !important;
+    vertical-align: middle;
+}
+.btnModal{
+    vertical-align: middle;
+    position: relative;
+    display: inline-block;
+    margin: 0 auto;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+#spanClientName{
+    font-size: 16pt !important;
+    font-weight: bold !important;
+    padding-bottom: 26px;
+}
+#spanClientName2 {
+    font-size: 16pt !important;
+    font-weight: bold !important;
+    padding-bottom: 16px;
+}
+#spanClientName3 {
+    font-size: 14pt !important;
+    font-weight: bold !important;
+    padding-bottom: 10px;
+}
+#tblReportes_paginate {
+    /*max-width: 460px;*/
+}
+@media screen and (max-width: 767px) {
+    .limitText {
+        max-width: 40vw;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+    }
+}
+.dataTables_processing{
+    border: unset !important;
+    background: unset !important;
+}
+.maxWidth320 {
+    max-width: 320px;
+}
+.maxWidth99 {
+    max-width: 99%;
+}
+.datepicker {
+    z-index: 9999 !important;
+}
+.datepicker, .day, .datepicker-switch, .prev, .next, .dow {
+    color: #000 !important;
+    font-style: italic !important;
+}
+.datepicker-days {
+    background-color: rgb(81, 116, 155);
+}
+#dtp1{
+    max-width: 320px;
+}
+#TxtDespachoId {
+    max-width: 320px;
+}
+.div856Search {
+    max-width: 60vw;
+    display: inline-block;
+    padding-left: 0 !important;
+}
+.col, .col-1, .col-10, .col-11, .col-12, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-auto, .col-lg, .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-auto, .col-md, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-auto, .col-sm, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-auto, .col-xl, .col-xl-1, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-auto {    
+    padding-right: 10px;
+    padding-left: 10px;
+}
+.inputUpload, .divUpload {
+    max-width: 240px;
+}
+.divUpload {
+    margin-top: 10px;
+    margin-left: 10px;
+}
+#cboPeriod {
+    /*width: 200px;*/
+    max-width: 84vw;
+}
+.cboPeriod {
+    /*width: 200px;*/
+    max-width: 310px !important;
+}
+#cboClient {
+    /*width: 200px;*/
+    max-width: 84vw;
+}
+.custom-file-label {
+    overflow: hidden;
+}
+#formSearch, .formSearch {
+    padding-left: 6px;
+}
+.actions button {
+    margin-bottom: 8px;
+}
+.datetimepicker-hours, .datetimepicker-minutes, .datetimepicker-days {
+    color: #000 !important;
+}
+.backRed {
+    background: rgb(212, 164, 164) !important;
+    color: #000 !important;    
+}
+#dtpPeriodUpload {
+    margin-top: 5px;
+}
+.marginTop10{
+    margin-top: 10px;
+}
+.marginBottom10 {
+    margin-bottom: 10px;
+}
+.divPaso {
+    color: #000;
+    font-weight: bold;
+}
+#dtpPeriodo {
+    max-width: 200px;
+}
+
+.card-header-payless {
+    background-color: unset;
+    background: linear-gradient(35deg, rgb(233, 147, 91), rgb(234, 204, 175));
+    font-size: 13pt;
+    font-weight: bold;
+}
+.pedidoPaylessLogo {
+    max-height: 48px;
+}
+.pedidoPaylessIcon {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    z-index: 6;
+}
+.divPedidoPaylessMain {
+    /*width: 60vw !important;*/
+    /*width: 900px !important;*/
+    /*border: 1px solid #000;*/
+}
+.divPedidoPaylessOverInfo {
+    width: 100%;
+    /*height: 40%;*/
+    /*width: 440px;*/
+    float: left;
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    z-index: 8;
+    /*padding: 5px;*/
+    color: #FFFFFF;
+    font-size: 13pt;
+}
+.divPedidoPaylessOverInfoContent {
+    z-index: 9;
+    background-color: rgba(0, 0, 64, 0.5);
+    padding: 8px;
+    width: 92%;
+    margin: 0 auto;
+    vertical-align: middle;
+    text-align: center;
+    text-shadow: 2px 2px #222;
+}
+.overInfoContentTittle {
+    font-size: 16pt;
+    font-weight: bold;
+    font-style: italic;
+}
+.overInfoContentContent{
+    box-sizing: border-box;
+    margin-left: 15px;    
+    text-align: left;
+}
+.overInfoContentContent {
+    padding-bottom: 10px;
+}
+.overInfoContentTittle {
+    display: inline-block;
+    padding-top: 10px;
+}
+#divLogoIndex {
+    box-sizing: border-box;
+    width: 85vw;
+    height: 85vh;
+    /*border: 1px solid #F00;*/
+    margin: 0 auto;
+    display: block;
+    position: relative;
+    background-image: url('/images/fondo2.jpg');
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+.littleDate {
+    max-width: 180px;
+}
+label {
+    margin-top: .5rem;
+}
+.rowEncuesta {
+    width: 100%;
+}
+.divCenter {
+    /*border: 1px solid;*/
+    position: relative;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 12pt;
+}
+.textNotice {
+    border: 1px dashed;    
+}
+.bothSide5Margins {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.bothSide10Margins {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.bothSide15Margins {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+#labelTemporada {
+    font-weight: bold;
+}
+fieldset {
+    background-color: rgba(139, 188, 242, 0.30);
+    border-radius: 4px;
+}
+legend {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: rgb(81, 116, 155);
+    font-size: 14pt;
+    font-weight: bold;
+    padding: 3px 5px 3px 7px;
+    width: auto;
+}

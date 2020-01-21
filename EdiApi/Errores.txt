@@ -1,0 +1,240 @@
+System.Data.SqlClient.SqlException (0x80131904): Incorrect syntax near ','.
+Incorrect syntax near ','.
+Incorrect syntax near ','.
+Incorrect syntax near ','.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName, Boolean async, Int32 timeout, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(TaskCompletionSource`1 completion, Boolean sendToPipe, Int32 timeout, Boolean asyncWrite, String methodName)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at EdiApi.Models.ManualDB.UploadBatch(WmsContext& _Wms, String Batch) in C:\Users\ADMIN\source\repos\EdiApi\EdiApi\Models\ManualDB.cs:line 570
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen, String CodUser) in C:\Users\ADMIN\source\repos\EdiApi\EdiApi\Controllers\DataController.cs:line 3125
+ClientConnectionId:18ded8ff-5fbd-4c75-a829-ae5d980617d8
+Error Number:102,State:1,Class:15
+SET XACT_ABORT ON
+--BEGIN TRANSACTION TRAN1
+DECLARE @MaxTransaccionId INT;
+DECLARE @MaxInventarioId INT;
+DECLARE @MaxDTId INT;
+DECLARE @MaxItemInventario INT;
+DECLARE @MaxDetItemTran INT;
+DECLARE @MaxDocTran INT;
+BEGIN TRY
+SET @MaxTransaccionId = 119513; 
+INSERT INTO dbo.Producto(CodProducto, Descripcion, UnidadMedida, ClienteID, EstatusID, CategoriaID, CantMinima, Fecha, Comentario, stock_maximo, descargoid, partida) SELECT 'HilmerTest1', 'DAMAS', 1, 1432, 1, 10, 0, CONVERT(DATETIME, '2019-06-28 11:51', 120), 'INGRESOS DESDE INTRANET', 0, 1, '0'; SELECT @MaxInventarioId = ISNULL(MAX(InventarioId), 0) + 5 FROM dbo.Inventario; INSERT INTO dbo.Inventario(InventarioID, Barcode, FechaCreacion, ClienteID, Descripcion, Declarado, Valor, Articulos, Peso, Volumen, EstatusID, IsAgranel, TipoBulto, existencia, auditado, cantidadinicial, Rack)SELECT @MaxInventarioId, 'BRC' + RIGHT('0000000'+ CONVERT(VARCHAR(64), @MaxInventarioId), 7), CONVERT(DATETIME, '2019-06-28 11:51', 120), 1432, 'DAMAS', 1, , 1, 3.65, 0.03714, 2, 0, 70, 1, 1, 1, ; SELECT @MaxDTId = ISNULL(MAX(DtllTrnsaccionId), 0) + 5 FROM dbo.DetalleTransacciones; INSERT INTO dbo.DetalleTransacciones(DtllTrnsaccionID, TransaccionID, InventarioID, Conteo, Cantidad, Valor, fechaitem, rack, embalaje, IsEscaneado) SELECT @MaxDTId, @MaxTransaccionId, @MaxInventarioId, 1, 1, 0, CONVERT(DATETIME, '2019-06-28 00:00', 120), , 'CS', 0; SELECT @MaxItemInventario = ISNULL(MAX(ItemInventarioId), 0) + 5 FROM dbo.ItemInventario; INSERT INTO dbo.ItemInventario(ItemInventarioID, InventarioID, CodProducto, Declarado, Precio, Observacion, fechaitem, descripcion, auditado, existencia, CantidadInicial, cod_equivale, pais_orig, lote, numero_oc, modelo, color, estilo) SELECT @MaxItemInventario, @MaxInventarioId, 'HilmerTest1', 1, , 'INGRESOS DESDE INTRANET', CONVERT(DATETIME, '2019-06-28 00:00', 120), 'DAMAS', 1, 1, 1, '7365 - Payless Shoe Source - Pricesmart SPS', 166, '181477', '0', 'CLB', 'SMLU 792180-6', '564395'; SELECT @MaxDetItemTran = ISNULL(MAX(DtllItemTransaccionId), 0) + 5 FROM dbo.DtllItemTransaccion; INSERT INTO dbo.DtllItemTransaccion(DtllItemTransaccionID, TransaccionID, DtllTransaccionID, ItemInventarioID, Cantidad, Precio, RACK) SELECT @MaxDetItemTran, @MaxTransaccionId, @MaxDTId, @MaxItemInventario, 1, , ; INSERT INTO dbo.ItemParamaetroxProducto(InventarioID, ItemInventarioID, CodProducto, ParametroID, ValParametro) SELECT @MaxInventarioId, @MaxItemInventario, 'HilmerTest1', 23, ''; INSERT INTO dbo.ItemParamaetroxProducto(InventarioID, ItemInventarioID, CodProducto, ParametroID, ValParametro) SELECT @MaxInventarioId, @MaxItemInventario, 'HilmerTest1', 15, 'CLB'; SELECT @MaxDocTran = ISNULL(MAX(IddocxTransaccion), 0) + 5 FROM dbo.DocumentosxTransaccion; INSERT INTO dbo.DocumentosxTransaccion(IDDocxTransaccion, transaccionid, fecha, INFORME_ALMACEN, FE_INFORME_ALMACEN, IM_5, ORDEN_COMPRA) SELECT @MaxDocTran, @MaxTransaccionId, CONVERT(DATETIME, '2019-06-28 11:51', 120), 'Hilmer12121212', CONVERT(DATETIME, '2019-06-28 00:00', 120), '', ''; 
+--COMMIT TRANSACTION TRAN1
+END TRY
+BEGIN CATCH	
+	--ROLLBACK TRANSACTION TRAN1
+	PRINT 'ERROR, LINEA: ' + CONVERT(VARCHAR(16), ERROR_LINE()) + ' - ' + ERROR_MESSAGE()
+	PRINT '@MaxTransaccionId = ' + CONVERT(VARCHAR(16), @MaxTransaccionId)
+	PRINT '@MaxInventarioId = ' + CONVERT(VARCHAR(16), @MaxInventarioId)
+	PRINT '@MaxDTId = ' + CONVERT(VARCHAR(16), @MaxDTId)
+	PRINT '@MaxItemInventario = ' + CONVERT(VARCHAR(16), @MaxItemInventario)
+	PRINT '@MaxDetItemTran = ' + CONVERT(VARCHAR(16), @MaxDetItemTran)
+	PRINT '@MaxDocTran = ' + CONVERT(VARCHAR(16), @MaxDocTran)
+END CATCH
+SET XACT_ABORT OFF
+                        
+
+TotalSeconds = 138.7475777
+System.Data.SqlClient.SqlException (0x80131904): Incorrect syntax near ','.
+Incorrect syntax near ','.
+Incorrect syntax near ','.
+Incorrect syntax near ','.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName, Boolean async, Int32 timeout, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(TaskCompletionSource`1 completion, Boolean sendToPipe, Int32 timeout, Boolean asyncWrite, String methodName)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at EdiApi.Models.ManualDB.UploadBatch(WmsContext& _Wms, String Batch) in C:\Users\ADMIN\source\repos\EdiApi\EdiApi\Models\ManualDB.cs:line 570
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen, String CodUser) in C:\Users\ADMIN\source\repos\EdiApi\EdiApi\Controllers\DataController.cs:line 3125
+ClientConnectionId:da910a26-d002-478d-9b5c-4883021bc4c6
+Error Number:102,State:1,Class:15
+SET XACT_ABORT ON
+--BEGIN TRANSACTION TRAN1
+DECLARE @MaxTransaccionId INT;
+DECLARE @MaxInventarioId INT;
+DECLARE @MaxDTId INT;
+DECLARE @MaxItemInventario INT;
+DECLARE @MaxDetItemTran INT;
+DECLARE @MaxDocTran INT;
+BEGIN TRY
+SET @MaxTransaccionId = 119515; 
+INSERT INTO dbo.Producto(CodProducto, Descripcion, UnidadMedida, ClienteID, EstatusID, CategoriaID, CantMinima, Fecha, Comentario, stock_maximo, descargoid, partida) SELECT 'HilmerTest1', 'DAMAS', 1, 1432, 1, 10, 0, CONVERT(DATETIME, '2019-06-28 11:54', 120), 'INGRESOS DESDE INTRANET', 0, 1, '0'; SELECT @MaxInventarioId = ISNULL(MAX(InventarioId), 0) + 5 FROM dbo.Inventario; INSERT INTO dbo.Inventario(InventarioID, Barcode, FechaCreacion, ClienteID, Descripcion, Declarado, Valor, Articulos, Peso, Volumen, EstatusID, IsAgranel, TipoBulto, existencia, auditado, cantidadinicial, Rack)SELECT @MaxInventarioId, 'BRC' + RIGHT('0000000'+ CONVERT(VARCHAR(64), @MaxInventarioId), 7), CONVERT(DATETIME, '2019-06-28 11:54', 120), 1432, 'DAMAS', 1, , 1, 3.65, 0.03714, 2, 0, 70, 1, 1, 1, ; SELECT @MaxDTId = ISNULL(MAX(DtllTrnsaccionId), 0) + 5 FROM dbo.DetalleTransacciones; INSERT INTO dbo.DetalleTransacciones(DtllTrnsaccionID, TransaccionID, InventarioID, Conteo, Cantidad, Valor, fechaitem, rack, embalaje, IsEscaneado) SELECT @MaxDTId, @MaxTransaccionId, @MaxInventarioId, 1, 1, 0, CONVERT(DATETIME, '2019-06-28 00:00', 120), , 'CS', 0; SELECT @MaxItemInventario = ISNULL(MAX(ItemInventarioId), 0) + 5 FROM dbo.ItemInventario; INSERT INTO dbo.ItemInventario(ItemInventarioID, InventarioID, CodProducto, Declarado, Precio, Observacion, fechaitem, descripcion, auditado, existencia, CantidadInicial, cod_equivale, pais_orig, lote, numero_oc, modelo, color, estilo) SELECT @MaxItemInventario, @MaxInventarioId, 'HilmerTest1', 1, , 'INGRESOS DESDE INTRANET', CONVERT(DATETIME, '2019-06-28 00:00', 120), 'DAMAS', 1, 1, 1, '7365 - Payless Shoe Source - Pricesmart SPS', 166, '181477', '0', 'CLB', 'SMLU 792180-6', '564395'; SELECT @MaxDetItemTran = ISNULL(MAX(DtllItemTransaccionId), 0) + 5 FROM dbo.DtllItemTransaccion; INSERT INTO dbo.DtllItemTransaccion(DtllItemTransaccionID, TransaccionID, DtllTransaccionID, ItemInventarioID, Cantidad, Precio, RACK) SELECT @MaxDetItemTran, @MaxTransaccionId, @MaxDTId, @MaxItemInventario, 1, , ; INSERT INTO dbo.ItemParamaetroxProducto(InventarioID, ItemInventarioID, CodProducto, ParametroID, ValParametro) SELECT @MaxInventarioId, @MaxItemInventario, 'HilmerTest1', 23, ''; INSERT INTO dbo.ItemParamaetroxProducto(InventarioID, ItemInventarioID, CodProducto, ParametroID, ValParametro) SELECT @MaxInventarioId, @MaxItemInventario, 'HilmerTest1', 15, 'CLB'; SELECT @MaxDocTran = ISNULL(MAX(IddocxTransaccion), 0) + 5 FROM dbo.DocumentosxTransaccion; INSERT INTO dbo.DocumentosxTransaccion(IDDocxTransaccion, transaccionid, fecha, INFORME_ALMACEN, FE_INFORME_ALMACEN, IM_5, ORDEN_COMPRA) SELECT @MaxDocTran, @MaxTransaccionId, CONVERT(DATETIME, '2019-06-28 11:54', 120), 'Hilmer12121212', CONVERT(DATETIME, '2019-06-28 00:00', 120), '', ''; 
+--COMMIT TRANSACTION TRAN1
+END TRY
+BEGIN CATCH	
+	--ROLLBACK TRANSACTION TRAN1
+	PRINT 'ERROR, LINEA: ' + CONVERT(VARCHAR(16), ERROR_LINE()) + ' - ' + ERROR_MESSAGE()
+	PRINT '@MaxTransaccionId = ' + CONVERT(VARCHAR(16), @MaxTransaccionId)
+	PRINT '@MaxInventarioId = ' + CONVERT(VARCHAR(16), @MaxInventarioId)
+	PRINT '@MaxDTId = ' + CONVERT(VARCHAR(16), @MaxDTId)
+	PRINT '@MaxItemInventario = ' + CONVERT(VARCHAR(16), @MaxItemInventario)
+	PRINT '@MaxDetItemTran = ' + CONVERT(VARCHAR(16), @MaxDetItemTran)
+	PRINT '@MaxDocTran = ' + CONVERT(VARCHAR(16), @MaxDocTran)
+END CATCH
+SET XACT_ABORT OFF
+                        
+
+TotalSeconds = 93.5580352
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen, String CodUser, Int32 ClienteId) in C:\Users\Hilmer\source\repos\GlcWeb\EdiApi\Controllers\DataController.cs:line 3290
+SET XACT_ABORT ON
+--BEGIN TRANSACTION TRAN2
+DECLARE @MaxTransaccionId INT;
+DECLARE @MaxInventarioId INT;
+DECLARE @MaxDTId INT;
+DECLARE @MaxItemInventario INT;
+DECLARE @MaxDetItemTran INT;
+DECLARE @MaxDocTran INT;
+BEGIN TRY
+SET @MaxTransaccionId = 127872; 
+INSERT INTO dbo.Producto(CodProducto, Descripcion, UnidadMedida, ClienteID, EstatusID, CategoriaID, CantMinima, Fecha, Comentario, stock_maximo, descargoid, partida) SELECT '7650826372', 'DAMAS', 1, 385, 1, 10, 0, CONVERT(DATETIME, '2019-09-18 13:49', 120), 'INGRESOS DESDE INTRANET', 0, 1, '0'; SELECT @MaxInventarioId = ISNULL(MAX(InventarioId), 0) + 5 FROM dbo.Inventario; INSERT INTO dbo.Inventario(InventarioID, Barcode, FechaCreacion, ClienteID, Descripcion, Declarado, Valor, Articulos, Peso, Volumen, EstatusID, IsAgranel, TipoBulto, existencia, auditado, cantidadinicial, Rack)SELECT @MaxInventarioId, 'BRC' + RIGHT('0000000'+ CONVERT(VARCHAR(64), @MaxInventarioId), 7), CONVERT(DATETIME, '2019-09-18 13:49', 120), 385, 'DAMAS', 1, 46.68, 1, 4.68, 0.04486, 2, 0, 70, 1, 1, 1, 948; SELECT @MaxDTId = ISNULL(MAX(DtllTrnsaccionId), 0) + 5 FROM dbo.DetalleTransacciones; INSERT INTO dbo.DetalleTransacciones(DtllTrnsaccionID, TransaccionID, InventarioID, Conteo, Cantidad, Valor, fechaitem, rack, embalaje, IsEscaneado) SELECT @MaxDTId, @MaxTransaccionId, @MaxInventarioId, 1, 1, 46.68, CONVERT(DATETIME, '2019-09-13 00:00', 120), 948, 'CS', 1; SELECT @MaxItemInventario = ISNULL(MAX(ItemInventarioId), 0) + 5 FROM dbo.ItemInventario; 
+TotalSeconds = 6.7893008
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen, String CodUser, Int32 ClienteId) in C:\Users\Hilmer\source\repos\GlcWeb\EdiApi\Controllers\DataController.cs:line 3290
+SET XACT_ABORT ON
+--BEGIN TRANSACTION TRAN2
+DECLARE @MaxTransaccionId INT;
+DECLARE @MaxInventarioId INT;
+DECLARE @MaxDTId INT;
+DECLARE @MaxItemInventario INT;
+DECLARE @MaxDetItemTran INT;
+DECLARE @MaxDocTran INT;
+BEGIN TRY
+SET @MaxTransaccionId = 127871; 
+INSERT INTO dbo.Producto(CodProducto, Descripcion, UnidadMedida, ClienteID, EstatusID, CategoriaID, CantMinima, Fecha, Comentario, stock_maximo, descargoid, partida) SELECT '7650826372', 'DAMAS', 1, 385, 1, 10, 0, CONVERT(DATETIME, '2019-09-18 14:05', 120), 'INGRESOS DESDE INTRANET', 0, 1, '0'; SELECT @MaxInventarioId = ISNULL(MAX(InventarioId), 0) + 5 FROM dbo.Inventario; INSERT INTO dbo.Inventario(InventarioID, Barcode, FechaCreacion, ClienteID, Descripcion, Declarado, Valor, Articulos, Peso, Volumen, EstatusID, IsAgranel, TipoBulto, existencia, auditado, cantidadinicial, Rack)SELECT @MaxInventarioId, 'BRC' + RIGHT('0000000'+ CONVERT(VARCHAR(64), @MaxInventarioId), 7), CONVERT(DATETIME, '2019-09-18 14:05', 120), 385, 'DAMAS', 1, 46.68, 1, 4.68, 0.04486, 2, 0, 70, 1, 1, 1, 948; SELECT @MaxDTId = ISNULL(MAX(DtllTrnsaccionId), 0) + 5 FROM dbo.DetalleTransacciones; INSERT INTO dbo.DetalleTransacciones(DtllTrnsaccionID, TransaccionID, InventarioID, Conteo, Cantidad, Valor, fechaitem, rack, embalaje, IsEscaneado) SELECT @MaxDTId, @MaxTransaccionId, @MaxInventarioId, 1, 1, 46.68, CONVERT(DATETIME, '2019-09-13 00:00', 120), 948, 'CS', 1; SELECT @MaxItemInventario = ISNULL(MAX(ItemInventarioId), 0) + 5 FROM dbo.ItemInventario; 
+TotalSeconds = 30.2988438
+System.ArgumentOutOfRangeException: Index and length must refer to a location within the string.
+Parameter name: length
+   at System.String.Substring(Int32 startIndex, Int32 length)
+   at EdiApi.Extensions.ToDateFromEspDate(String _Str) in C:\Users\Hilmer\source\repos\GlcWeb\EdiApi\Utility\Extensions.cs:line 85
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen, String CodUser, Int32 ClienteId) in C:\Users\Hilmer\source\repos\GlcWeb\EdiApi\Controllers\DataController.cs:line 3327
+SET XACT_ABORT ON
+--BEGIN TRANSACTION TRAN1
+DECLARE @MaxTransaccionId INT;
+DECLARE @MaxInventarioId INT;
+DECLARE @MaxDTId INT;
+DECLARE @MaxItemInventario INT;
+DECLARE @MaxDetItemTran INT;
+DECLARE @MaxDocTran INT;
+BEGIN TRY
+SET @MaxTransaccionId = 127893; 
+INSERT INTO dbo.Producto(CodProducto, Descripcion, UnidadMedida, ClienteID, EstatusID, CategoriaID, CantMinima, Fecha, Comentario, stock_maximo, descargoid, partida) SELECT '7675870426', 'DAMAS', 1, 385, 1, 10, 0, CONVERT(DATETIME, '2019-10-14 08:48', 120), 'INGRESOS DESDE INTRANET', 0, 1, '0'; SELECT @MaxInventarioId = ISNULL(MAX(InventarioId), 0) + 5 FROM dbo.Inventario; INSERT INTO dbo.Inventario(InventarioID, Barcode, FechaCreacion, ClienteID, Descripcion, Declarado, Valor, Articulos, Peso, Volumen, EstatusID, IsAgranel, TipoBulto, existencia, auditado, cantidadinicial, Rack)SELECT @MaxInventarioId, 'BRC' + RIGHT('0000000'+ CONVERT(VARCHAR(64), @MaxInventarioId), 7), CONVERT(DATETIME, '2019-10-14 08:48', 120), 385, 'DAMAS', 1, 0, 1, 4.74, 0.04229, 2, 0, 71, 1, 1, 1, 6501; SELECT @MaxDTId = ISNULL(MAX(DtllTrnsaccionId), 0) + 5 FROM dbo.DetalleTransacciones; 
+TotalSeconds = 87.8266344
+System.InvalidOperationException: An exception has been raised that is likely due to a transient failure. Consider enabling transient error resiliency by adding 'EnableRetryOnFailure()' to the 'UseSqlServer' call. ---> Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while updating the entries. See the inner exception for details. ---> System.Data.SqlClient.SqlException: A transport-level error has occurred when receiving results from the server. (provider: TCP Provider, error: 0 - The specified network name is no longer available.) ---> System.ComponentModel.Win32Exception: The specified network name is no longer available
+   --- End of inner exception stack trace ---
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParserStateObject.ReadSniError(TdsParserStateObject stateObj, UInt32 error)
+   at System.Data.SqlClient.TdsParserStateObject.ReadSniSyncOverAsync()
+   at System.Data.SqlClient.TdsParserStateObject.TryReadNetworkPacket()
+   at System.Data.SqlClient.TdsParserStateObject.TryPrepareBuffer()
+   at System.Data.SqlClient.TdsParserStateObject.TryReadByte(Byte& value)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommand.Execute(IRelationalConnection connection, DbCommandMethod executeMethod, IReadOnlyDictionary`2 parameterValues)
+   at Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommand.ExecuteReader(IRelationalConnection connection, IReadOnlyDictionary`2 parameterValues)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.Execute(IRelationalConnection connection)
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.Execute(IRelationalConnection connection)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.Execute(DbContext _, ValueTuple`2 parameters)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.Execute(IEnumerable`1 commandBatches, IRelationalConnection connection)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(IReadOnlyList`1 entriesToSave)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(Boolean acceptAllChangesOnSuccess)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChanges(Boolean acceptAllChangesOnSuccess)
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen, String CodUser, Int32 ClienteId) in C:\Users\Hilmer\source\repos\GlcWeb\EdiApi\Controllers\DataController.cs:line 3209
+
+TotalSeconds = 221.4858495
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(ReadOnlySpan`1 str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(ReadOnlySpan`1 s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at EdiApi.Extensions.ToDate(String _Str) in C:\Users\Hilmer\source\repos\GlcWeb\EdiApi\Utility\Extensions.cs:line 64
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen, String CodUser, Int32 ClienteId) in C:\Users\Hilmer\source\repos\GlcWeb\EdiApi\Controllers\DataController.cs:line 3240
+SET XACT_ABORT ON
+--BEGIN TRANSACTION TRAN1
+DECLARE @MaxTransaccionId INT;
+DECLARE @MaxInventarioId INT;
+DECLARE @MaxDTId INT;
+DECLARE @MaxItemInventario INT;
+DECLARE @MaxDetItemTran INT;
+DECLARE @MaxDocTran INT;
+BEGIN TRY
+
+TotalSeconds = 4.3624793
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(ReadOnlySpan`1 str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(ReadOnlySpan`1 s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at EdiApi.Extensions.ToDate(String _Str) in C:\Users\Hilmer\source\repos\GlcWeb\EdiApi\Utility\Extensions.cs:line 64
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen, String CodUser, Int32 ClienteId) in C:\Users\Hilmer\source\repos\GlcWeb\EdiApi\Controllers\DataController.cs:line 3240
+SET XACT_ABORT ON
+--BEGIN TRANSACTION TRAN1
+DECLARE @MaxTransaccionId INT;
+DECLARE @MaxInventarioId INT;
+DECLARE @MaxDTId INT;
+DECLARE @MaxItemInventario INT;
+DECLARE @MaxDetItemTran INT;
+DECLARE @MaxDocTran INT;
+BEGIN TRY
+
+TotalSeconds = 4.3642427
+System.Exception: Error en el ingreso y no se pudo borrar automaticamente la transacción 120546. El error secundario es System.InvalidOperationException: There is already an open DataReader associated with this Command which must be closed first.
+   at System.Data.SqlClient.SqlInternalConnectionTds.ValidateConnectionForExecute(SqlCommand command)
+   at System.Data.SqlClient.SqlCommand.ValidateCommand(Boolean async, String method)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommand.Execute(IRelationalConnection connection, DbCommandMethod executeMethod, IReadOnlyDictionary`2 parameterValues)
+   at Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommand.ExecuteReader(IRelationalConnection connection, IReadOnlyDictionary`2 parameterValues)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable`1.Enumerator.BufferlessMoveNext(DbContext _, Boolean buffer)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementation[TState,TResult](Func`3 operation, Func`3 verifySucceeded, TState state)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable`1.Enumerator.MoveNext()
+   at Microsoft.EntityFrameworkCore.Query.Internal.LinqOperatorProvider._TrackEntities[TOut,TIn](IEnumerable`1 results, QueryContext queryContext, IList`1 entityTrackingInfos, IList`1 entityAccessors)+MoveNext()
+   at Microsoft.EntityFrameworkCore.Query.Internal.LinqOperatorProvider.ExceptionInterceptor`1.EnumeratorExceptionInterceptor.MoveNext()
+   at System.Linq.Enumerable.Count[TSource](IEnumerable`1 source)
+   at EdiApi.Controllers.DataController.DeleteTransaction(Int32 MaxTransaccionId) in C:\Users\Hilmer\source\repos\GlcWeb\EdiApi\Controllers\DataController.cs:line 3502
+   at EdiApi.Controllers.DataController.DeleteTransaction(Int32 MaxTransaccionId) in C:\Users\Hilmer\source\repos\GlcWeb\EdiApi\Controllers\DataController.cs:line 3551
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen, String CodUser, Int32 ClienteId) in C:\Users\Hilmer\source\repos\GlcWeb\EdiApi\Controllers\DataController.cs:line 3465
+
+TotalSeconds = 151.902244
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen, String CodUser, Int32 ClienteId) in C:\Users\Hilmer\source\repos\GlcWeb\EdiApi\Controllers\DataController.cs:line 3298
+SET XACT_ABORT ON
+--BEGIN TRANSACTION TRAN1
+DECLARE @MaxTransaccionId INT;
+DECLARE @MaxInventarioId INT;
+DECLARE @MaxDTId INT;
+DECLARE @MaxItemInventario INT;
+DECLARE @MaxDetItemTran INT;
+DECLARE @MaxDocTran INT;
+BEGIN TRY
+SET @MaxTransaccionId = 120561; 
+
+TotalSeconds = 6.0344418
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen, String CodUser, Int32 ClienteId) in C:\Users\Hilmer\source\repos\GlcWeb\EdiApi\Controllers\DataController.cs:line 3298
+SET XACT_ABORT ON
+--BEGIN TRANSACTION TRAN1
+DECLARE @MaxTransaccionId INT;
+DECLARE @MaxInventarioId INT;
+DECLARE @MaxDTId INT;
+DECLARE @MaxItemInventario INT;
+DECLARE @MaxDetItemTran INT;
+DECLARE @MaxDocTran INT;
+BEGIN TRY
+SET @MaxTransaccionId = 120561; 
+
+TotalSeconds = 49.5991402

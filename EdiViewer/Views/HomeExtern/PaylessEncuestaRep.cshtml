@@ -1,0 +1,170 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Reportes de encuestas";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Reportes de encuestas</h4>
+                </div>
+                <div class="card-body">
+                    <form id="formSearch">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <span id="spanClientName2">
+                                        <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label for="cboAnio">Año</label>
+                                    <select class="form-control" id="cboAnio" name="cboAnio">
+                                        <option value="2019">2019</option>
+                                        <option value="2020">2020</option>
+                                        <option value="2021">2021</option>
+                                        <option value="2022">2022</option>
+                                        <option value="2023">2023</option>
+                                        <option value="2024">2024</option>
+                                        <option value="2025">2025</option>
+                                        <option value="2026">2026</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm">
+                                    <label for="cboMes">Mes</label>
+                                    <select class="form-control" id="cboMes" name="cboMes">
+                                        <option value="1">Enero</option>
+                                        <option value="2">Febrero</option>
+                                        <option value="3">Marzo</option>
+                                        <option value="4">Abril</option>
+                                        <option value="5">Mayo</option>
+                                        <option value="6">Junio</option>
+                                        <option value="7">Julio</option>
+                                        <option value="8">Agosto</option>
+                                        <option value="9">Septiembre</option>
+                                        <option value="10">Octubre</option>
+                                        <option value="11">Noviembre</option>
+                                        <option value="12">Diciembre</option>
+                                    </select>
+                                </div>
+                            </div>                            
+                        </div>
+                    </form>
+                    <div class="clearfix"></div>
+                    <br />
+                    <div id="gridEncuestaRep" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>        
+    </div>
+</div>
+@await Html.PartialAsync("_PopChangePedido")
+<script>
+    var ModalPopPeticionDet = null;
+    var domtblReportes = null;
+    var domtblPeticionDet = null;
+    var HashId = '';
+    var gridEncuestaRep = null;
+    var gridEncuestaRepDet = null;
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function downloadWmsFile(recid) {
+        window.open('@this.Url.Action("MakeExcelEncuestaMatrix", "HomeExtern")?Id=' + recid);
+    }
+    var getClientName = new Promise(function (resolve, reject) {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientNow", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName2').html(data.data);
+                $('#divSpinClientName').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    });
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridEncuestaRep',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetPaylessEncuestaRepM", "Grids")?Anio=' + $('#cboAnio').val() + '&Mes=' + $('#cboMes').val(),
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: "id", caption: "Id orden", type: 'text' },
+                    { field: "tiendaId", caption: "Tienda", type: 'text' },
+                    { field: "fechaPedido", caption: "Fecha y hora esperada", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'id' },
+                    { field: 'tiendaId' },
+                    { field: 'cont' }
+                ],
+                columns: [
+                    { field: "id", caption: "Id", sortable: false, hidden: true},                    
+                    { field: "weekOfYear", caption: "Semana", sortable: false, hidden: false },
+                    { field: "fechaI", caption: "Fecha inicio", sortable: false, hidden: false },
+                    { field: "fechaF", caption: "Fecha fin (no inclusive)", sortable: false },
+                    { field: "cantPedidos", caption: "Cantidad pedidos", sortable: false },
+                    { field: "cantEncuestas", caption: "Cantidad encuestas", sortable: false },
+                    {
+                        field: "", caption: "", sortable: false, render: function (record) {
+                            return '<a href="javascript:downloadWmsFile(' + record.id + ')">Descargar</a>';
+                        }
+                    }                    
+                ]
+            }
+        };
+        gridEncuestaRep = $('#gridEncuestaRep').w2grid(config.grid);
+        arrayGrids['gridEncuestaRep'] = gridEncuestaRep;
+    }
+    $(document).ready(function () {
+        getClientName.then();
+        if (gridEncuestaRep == null)
+            crearGrid();
+        else
+            gridEncuestaRepDet.reload2('@this.Url.Action("GetPaylessEncuestaRepM", "Grids")?Anio=' + $('#cboAnio').val() + '&Mes=' + $('#cboMes').val());
+        $('#cboAnio').on('change', function () {
+            if (gridEncuestaRep == null)
+                crearGrid();
+            else
+                gridEncuestaRep.reload2('@this.Url.Action("GetPaylessEncuestaRepM", "Grids")?Anio=' + $('#cboAnio').val() + '&Mes=' + $('#cboMes').val());
+        });
+        $('#cboMes').on('change', function () {
+            if (gridEncuestaRep == null)
+                crearGrid();
+            else
+                gridEncuestaRep.reload2('@this.Url.Action("GetPaylessEncuestaRepM", "Grids")?Anio=' + $('#cboAnio').val() + '&Mes=' + $('#cboMes').val());
+        });
+    });
+</script>

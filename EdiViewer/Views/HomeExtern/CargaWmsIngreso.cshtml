@@ -1,0 +1,253 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Carga de archivo de ingreso en WMS";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Carga de archivo de ingreso en WMS&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Carga de archivo de ingreso en WMS" alt="Carga de archivo de ingreso en WMS"></h4>
+                </div>
+                <div class="card-body">
+                    <div style="color: orangered;">
+                        El Excel no debe tener clientes intercalados, sino un mismo cliente de forma contigua.
+                    </div>
+                    <div style="color: black;">
+                        Pantalla para hacer ingresos al WMS utilizando el formato generado en la pantalla "carga de archivo de escaners"
+                    </div>
+                    <form id="formSearch">
+                        <div class="container div856Search">
+                            <div class="row">                                
+                                <div class="col-sm">
+                                    <label for="cboLocation">Lugar</label>
+                                    <div id="divSpinCboLocation" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <select class="form-control" id="cboLocation" name="cboLocation"></select>
+                                </div>
+                                <div class="col-sm">
+                                    <label for="cboBodegas">Bodega</label>
+                                    <div id="divSpinCboBodegas" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <select class="form-control" id="cboBodegas" name="cboBodegas"></select>
+                                </div>
+                                <div class="col-sm">
+                                    <label for="cboRegimen">Regimen</label>
+                                    <div id="divSpinCboRegimen" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <select class="form-control" id="cboRegimen" name="cboRegimen"></select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm custom-file divUpload" style="max-width: unset !important; margin-bottom: 10px;">
+                                    <input type="file" class="custom-file-input" id="fUpload" name="fUpload">
+                                    <label id="lblFile" class="custom-file-label" for="fUpload">Archivo a cargar</label>
+                                </div>
+                            </div>
+                            <div class="row margin5">
+                                <div class="col-sm">
+                                    <button class="btn btn-primary" type="button" id="btnUpload">
+                                        &nbsp;&nbsp;&nbsp;Cargar archivo&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinUploadFile" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                        <span id="spanCont"></span>
+                                    </button>
+                                    <button id="btnReload" class="btn btn-primary" type="button" onclick="window.location.href = window.location.href;">
+                                        &nbsp;&nbsp;&nbsp;Recargar&nbsp;&nbsp;&nbsp;
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row margin5">
+                                <div class="col-sm">
+                                    <span id="divRes" class="alert-warning"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <form id="formReportes" action=""></form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var tblReportes = null;
+    var mainGrid = null;
+    var stopAsync = false;
+    //function afterFillCombobox() {
+    //}
+    $(document).ready(function () {
+        $('.imgHeaderHelp').tooltip();        
+        $('#cboBodegas').on('change', function (Event) {
+            fillComboboxPromise('#divSpinCboRegimen', '@this.Url.Action("GetWmsRegimen", "HomeExtern")?BodegaId=' + $('#cboBodegas').val(), '#cboRegimen', 'idregimen', 'regimen1', 0).then();
+        });
+        $('#cboLocation').on('change', function (Event) {            
+            fillComboboxPromise('#divSpinCboBodegas', '@this.Url.Action("GetWmsBodegas", "HomeExtern")?LocationId=' + $('#cboLocation').val(), '#cboBodegas', 'bodegaId', 'nomBodega', 0)
+                .then(function () {
+                    fillComboboxPromise('#divSpinCboRegimen', '@this.Url.Action("GetWmsRegimen", "HomeExtern")?BodegaId=' + $('#cboBodegas').val(), '#cboRegimen', 'idregimen', 'regimen1', 0).then();
+                });
+        });
+        fillComboboxPromise('#divSpinCboLocation', '@this.Url.Action("GetWmsLocations", "HomeExtern")', '#cboLocation', 'locationid', 'dsclocation', 7)
+            .then(function () {
+                fillComboboxPromise('#divSpinCboBodegas', '@this.Url.Action("GetWmsBodegas", "HomeExtern")?LocationId=' + $('#cboLocation').val(), '#cboBodegas', 'bodegaId', 'nomBodega', 0)
+            });
+        $('#fUpload').on('change', function (event) {
+            var fullPath = $('#fUpload').val();
+            if (fullPath) {
+                var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+                var filename = fullPath.substring(startIndex);
+                if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                    filename = filename.substring(1);
+                }
+                $('#lblFile').text(filename);
+            }
+        });
+        $('#btnUpload').on('click', function () {
+            if ($('#cboBodegas').val() == '') {
+                menErrorEdi('El valor de la bodega no puede estar vacio', 'Error');
+                return;
+            }
+            if ($('#cboRegimen').val() == '') {
+                menErrorEdi('El valor del regimen no puede estar vacio', 'Error');
+                return;
+            }
+            var fileExtension = ['xls', 'XLS', 'xlsx', 'XLSX'];
+            var filename = $('#fUpload').val();
+            if (filename.length == 0) {
+                menErrorEdi('Por favor seleccione un archivo', 'Error');
+                return false;
+            }
+            else {
+                var extension = filename.replace(/^.*\./, '');
+                if ($.inArray(extension, fileExtension) == -1) {
+                    menErrorEdi('Solo se permiten archivos de Excel', 'Error');
+                    return false;
+                }
+            }
+            $('#btnUpload').prop('disabled', true);
+            $('#btnReload').prop('disabled', true);
+            $('#divSpinUploadFile').show();
+            var fdata = new FormData();
+            var fileUpload = $("#fUpload").get(0);
+            var files = fileUpload.files;
+            fdata.append(files[0].name, files[0]);
+            $.ajax({
+                type: "POST",
+                timeout: 600000,
+                url: '@this.Url.Action("SetIngresoExcelWms", "HomeExtern")?cboBodega=' + $('#cboBodegas').val() + '&cboRegimen=' + $('#cboRegimen').val() + '&Typ=0',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                data: fdata,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.info.codError != 0) {
+                        $('#divSpinUploadFile').hide();
+                        $('#btnReload').prop('disabled', false);
+                        $('#divRes').html(response.info.mensaje);
+                        menErrorEdi(response.info.mensaje);
+                        return;
+                    }
+                    $.ajax({
+                        type: "POST",
+                        timeout: 600000,
+                        url: '@this.Url.Action("SetIngresoExcelWms", "HomeExtern")?cboBodega=' + $('#cboBodegas').val() + '&cboRegimen=' + $('#cboRegimen').val() + '&Typ=1',
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("XSRF-TOKEN",
+                                $('input:hidden[name="__RequestVerificationToken"]').val());
+                        },
+                        data: fdata,
+                        contentType: false,
+                        processData: false,
+                        success: function (response) {
+                            // jue jue jue
+                            //if (response.info.codError != 0) {
+                            //    menErrorEdi(response.info.mensaje);
+                            //    stopAsync = true;
+                            //    return;
+                            //}
+                        },
+                        error: function (resp) {
+                        }
+                    });
+                    setInterval(function () {
+                        if (stopAsync)
+                            return;
+                        $.ajax({
+                            url: '@this.Url.Action("GetAsyncState0", "HomeExtern")',
+                            type: 'GET',
+                            dataType: 'JSON',
+                            success: function (json) {
+                                $('#divSpinUploadFile').hide();
+                                if (json.info.codError != 0) {                                    
+                                    menErrorEdi(json.info.mensaje);
+                                    stopAsync = true;
+                                    return json.data;
+                                }
+                                if (json.data) {
+                                    if (json.data.length == 0)
+                                        stopAsync = true;
+                                    else {
+                                        $('#spanCont').text(json.data[0].val + ' / ' + json.data[0].maximum);
+                                        if (json.data[0].mess != null) {
+                                            if (json.data[0].mess != '') {                                                
+                                                $('#divSpinUploadFile').hide();
+                                                $('#btnReload').prop('disabled', false);
+                                                $('#divRes').html(json.data[0].mess);
+                                                menErrorEdi(json.data[0].mess, 'Información');
+                                                stopAsync = true;                                                
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                menErrorEdi(xhr.status, '');
+                                menErrorEdi(thrownError, '');
+                            }
+                        });
+                    }, 6660);                    
+                },
+                error: function (resp) {
+                    setInterval(function () {
+                        $.ajax({
+                            url: '@this.Url.Action("GetAsyncState0", "HomeExtern")',
+                            type: 'GET',
+                            dataType: 'JSON',
+                            success: function (json) {                                
+                                if (json.info.codError != 0) {                                    
+                                    menErrorEdi(json.info.mensaje);
+                                    return json.data;
+                                }
+                                if (json.data) {
+                                    $('#spanCont').text(json.data[0].val + ' / ' + json.data[0].maximum);
+                                    if (json.data[0].mess != '') {                                        
+                                        $('#divSpinUploadFile').hide();
+                                        $('#btnReload').prop('disabled', false);
+                                        $('#divRes').html(json.data[0].mess);
+                                        menErrorEdi(json.data[0].mess, 'Información');
+                                    }
+                                }
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                menErrorEdi(xhr.status, '');
+                                menErrorEdi(thrownError, '');
+                            }
+                        });
+                    }, 6660);
+                    //$('#divSpinUploadFile').hide();
+                    //if (resp.statusText != null)
+                    //    menErrorEdi(resp.statusText, 'Error');
+                    //menErrorEdi(resp.info.mensaje);
+                }
+            });
+        });
+    });
+</script>

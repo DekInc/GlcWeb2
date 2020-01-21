@@ -1,0 +1,149 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+	<AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <RuntimeFrameworkVersion>2.2.0</RuntimeFrameworkVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="plantillaencuestasrep.xls" />
+    <None Remove="plantillaOrdenes.xls" />
+    <None Remove="plantillaOrdenes3.xls" />
+    <None Remove="plantillaOrdenes3b.xls" />
+    <None Remove="plantillaOrdenes4.xls" />
+    <None Remove="plantillaOrdenes4b.xls" />
+    <None Remove="plantillaOrdenes5.xls" />
+    <None Remove="plantillaOrdenes5b.xls" />
+    <None Remove="plantillaOrdenes6.xls" />
+    <None Remove="plantillaOrdenes6b.xls" />
+    <None Remove="plantillaWms1.xls" />
+    <None Remove="plantillaWms2.xls" />
+    <None Remove="plantillaWms3.xls" />
+    <None Remove="plantillaWms3.xlsx" />
+    <None Remove="plantillaWms4.xlsx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="plantillaencuestasrep.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillaOrdenes3.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillaOrdenes3b.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillaOrdenes4.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillaOrdenes4b.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillaOrdenes5.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillaOrdenes5b.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillaOrdenes6.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillaOrdenes6b.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillaWms1.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="plantillaWms2.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillaWms3.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillaWms3.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillaWms4.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="bootstrap" Version="4.3.1" />
+    <PackageReference Include="DotNetCore.NPOI" Version="1.2.1" />
+    <PackageReference Include="jQuery" Version="3.4.1" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />    
+    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.18" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\images\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ComModels\ComModels.csproj" />
+    <ProjectReference Include="..\CoreApiClient\CoreApiClient.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Home\_DetailsOnRef830.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Home\_DetailsOnShp830.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Home\_DetailsOnAth830.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Home\_DetailsOnFst830.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Home\_DetailsOnSdp830.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Home\_DetailsOnPrs830.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Home\_DetailsOnUit830.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Home\_DetailsOnNte830.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Home\_DetailsOnN4830.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Rep856\Index.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\_LayoutLogin.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\_PopPeticionDetAdmin.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="wwwroot\favicon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\files\learspec830.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\files\learspec856.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\files\ManualUsuario2019.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\ajax.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

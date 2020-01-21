@@ -1,0 +1,265 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Carga de planilla de productos";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Carga de planilla de productos&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Pantalla utilizada para cargar el excel inicial de productos a enviar" alt="Pantalla utilizada para cargar el excel inicial de productos a enviar"></h4>
+                </div>
+                <div class="card-body">
+                    <form id="formSearch">
+                        <div class="container div856Search">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <span id="spanClientName">
+                                        <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label for="dtpPeriodoBuscar">Periodo</label>
+                                    <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtpPeriodoBuscar" placeholder="dd/mm/yyyy" maxlength="10" autocorrect="off" autocapitalize="off" autocomplete="off" />
+                                </div>
+                                <div class="col-sm">
+                                    <label for="cboTransporte">Transporte</label>
+                                    <div id="divSpinCboTransporte" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <select class="form-control" id="cboTransporte" name="cboTransporte"></select>
+                                </div>
+                            </div>
+                            <div class="row margin5">
+                                <div class="col-sm">
+                                    <button id="btnFiltrar" class="btn btn-primary" type="button">
+                                        &nbsp;&nbsp;&nbsp;Buscar&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinFiltrar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                    <button id="btnLimpiar" class="btn btn-primary" type="button">
+                                        &nbsp;&nbsp;&nbsp;Limpiar&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinLimpiar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                    <button id="btnNewUpload" class="btn btn-primary" type="button">Cargar archivo Excel</button>
+                                    <button id="btnUploadResume" class="btn btn-primary" type="button">Ver cajas</button>
+                                    <button id="btnShowPeriods" class="btn btn-primary" type="button">Ver Periodos cargados</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="clearfix"></div>
+                    <br />
+                    <div id="gridExcelFile" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@await Html.PartialAsync("_PopNewProdUpload")
+@await Html.PartialAsync("_PopCargaProdPrioriAdminShowPeriods")
+<script>
+    var ModalPopPeticionDet = null;
+    var domtblReportes = null;
+    var domtblPeticionDet = null;
+    var mainGrid = null;
+    var gridPeriods = null;
+    var HashId = '';
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    var getClientName = new Promise(function (resolve, reject) {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientNow", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName').html(data.data);
+                $('#divSpinClientName').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    });
+    function getTransportes() {
+        if ($('#dtpPeriodoBuscar').val() == '') return;
+        $('#divSpinCboTransporte').show();
+        $.ajax({
+            url: '@this.Url.Action("GetTransportByPeriod", "HomeExtern")?Period=' + $('#dtpPeriodoBuscar').val(),
+            type: 'GET',
+            dataType: 'JSON',
+            success: function (json) {
+                $('#divSpinCboTransporte').hide();
+                if (json.info.codError != 0) {
+                    menErrorEdi(json.info.mensaje);
+                    return json.data;
+                }
+                $('#cboTransporte').empty();
+                $.each(json.data, function (indexI, itemO) {
+                    $('#cboTransporte').append($('<option>', {
+                        value: this.idTransporte,
+                        text: this.transporte,
+                        selected: false
+                    }));
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, '');
+                menErrorEdi(thrownError, '');
+            }
+        });
+    }
+    function crearGridPeriods() {
+        var config = {
+            grid: {
+                name: 'gridPeriods',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetAllPeriods", "Grids")',
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck(),
+                    toolbarInput: false
+                },                
+                colShowResponsive: [
+                    { field: 'Periodo' }
+                ],
+                columns: [
+                    { field: "periodo", caption: "Periodo", hidden: false }                    
+                ]
+            }
+        };
+        gridPeriods = $('#gridPeriods').w2grid(config.grid);
+        arrayGrids['gridPeriods'] = gridPeriods;
+    }
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridExcelFile',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetPaylessProdPrioriAdmin", "Grids")?dtpPeriodoBuscar=' + $('#dtpPeriodoBuscar').val() + '&cboTransporte=' + $('#cboTransporte').val(),
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: "oid", caption: "oid", type: 'text' },
+                    { field: "barcode", caption: "Cod. caja", type: 'text' },
+                    { field: "estado", caption: "estado", type: 'text' },
+                    { field: "pri", caption: "pri", type: 'text' },
+                    { field: "poolP", caption: "poolP", type: 'text' },
+                    { field: "producto", caption: "Lote", type: 'text' },
+                    { field: "talla", caption: "talla", type: 'text' },
+                    { field: "lote", caption: "Estilo", type: 'text' },
+                    { field: "categoria", caption: "Genero", type: 'text' },
+                    { field: "departamento", caption: "departamento", type: 'text' },
+                    { field: "cp", caption: "cp", type: 'text' },
+                    { field: "transporte", caption: "Transporte", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'barcode' }
+                ],
+                columns: [
+                    { field: "id", caption: "id", sortable: true, hidden: true },
+                    { field: "transporte", caption: "Transporte", sortable: true },
+                    { field: "oid", caption: "oid", sortable: true },
+                    { field: "barcode", caption: "Cod. caja", sortable: true },
+                    { field: "estado", caption: "estado", sortable: true },
+                    { field: "pri", caption: "pri", sortable: true },
+                    { field: "poolP", caption: "poolP", sortable: true },
+                    { field: "producto", caption: "Lote", sortable: true },
+                    { field: "talla", caption: "Talla", sortable: true },
+                    { field: "lote", caption: "Estilo", sortable: true },
+                    { field: "categoria", caption: "Genero", sortable: true },
+                    { field: "departamento", caption: "departamento", sortable: true },
+                    { field: "cp", caption: "cp", sortable: true },
+                    { field: "pickeada", caption: "pickeada", sortable: true },
+                    { field: "etiquetada", caption: "etiquetada", sortable: true },
+                    { field: "preinspeccion", caption: "preinspeccion", sortable: true },
+                    { field: "cargada", caption: "cargada", sortable: true },
+                    { field: "m3", caption: "m3", sortable: true },
+                    { field: "peso", caption: "peso", sortable: true }
+                ]
+            }
+        };
+        mainGrid = $('#gridExcelFile').w2grid(config.grid);
+        arrayGrids['gridExcelFile'] = mainGrid;
+    }
+    $(document).ready(function () {
+        $('#dtpPeriodoBuscar').datepicker();
+        $('.imgHeaderHelp').tooltip();
+        getClientName.then();
+        crearGrid();
+        $('#btnNewUpload').on('click', function (Event) {
+            $('#modalPopNewProdUpload').modal();
+        });
+        $('#btnFiltrar').on("click", function (Event) {
+            if ($('#cboLocation').val() == '') {
+                menErrorEdi('El lugar es necesario para una búsqueda', 'Error');
+                return;
+            }
+            if ($('#dtpPeriodoBuscar').val() == '') {
+                menErrorEdi('El periodo es necesario para una búsqueda', 'Error');
+                return;
+            }
+            if ($('#cboTransporte').val() == '') {
+                menErrorEdi('El contenedor es necesario para una búsqueda', 'Error');
+                return;
+            }
+            $('#divSpinFiltrar').show();
+            mainGrid.reload2('@this.Url.Action("GetPaylessProdPrioriAdmin", "Grids")?dtpPeriodoBuscar=' + $('#dtpPeriodoBuscar').val() + '&cboTransporte=' + $('#cboTransporte').val());
+        });
+        $('#btnLimpiar').on("click", function (Event) {
+            $('#divSpinFiltrar').hide();
+            $('#dtpPeriodoBuscar').val('');
+            mainGrid.reload2('@this.Url.Action("GetPaylessProdPrioriAdmin", "Grids")?dtpPeriodoBuscar=' + $('#dtpPeriodoBuscar').val() + '&cboTransporte=' + $('#cboTransporte').val());
+        });
+        $('#btnUploadResume').on('click', function (Event) {
+            window.location.href = '@this.Url.Action("CargaProdPriori")';
+        });
+        $('#btnShowPeriods').on('click', function (Event) {
+            $('#modalPeriods').modal();
+            if (gridPeriods == null)
+                crearGridPeriods();
+            else
+                gridPeriods.reload2('@this.Url.Action("GetAllPeriods", "Grids")');
+        });
+        $('#dtpPeriodoBuscar').on('change', function (Event) {
+            getTransportes();
+        });
+        if (window.mobileAndTabletcheck()) {
+            $('.div856Search').css({ "max-width": "unset" });
+            $('#dtpPeriodoBuscar').css({ "width": "100%" });
+            $('.btn').css({ "margin-bottom": "10px" });
+            $('.btn').addClass('btn-block');
+        }
+    });
+</script>

@@ -1,0 +1,104 @@
+﻿<div class="modal fade2" id="modalPopCargaProdPrioriDet" tabindex="-1" role="dialog" aria-labelledby="modalPopCargaProdPrioriDetLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content modal-content-normal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPopCargaProdPrioriDetLabel">Detalle</h5>                
+            </div>
+            <div class="modal-body">
+                <div id="divmodalPopCargaProdPrioriDetContent">
+                    <div id="gridExcelDet" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+            <div class="modal-footer text-center">
+                <button id="modalPopCargaProdPrioriDetOk" type="button" class="btn btn-success btnModal" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var domtblDet = null;
+    var HashId = '';
+    var barcode = 1;
+    var talla = 2;
+    var detGrid = null;
+    var foo = function () {
+    }
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearDetGrid() {
+        var config = {
+            grid: {
+                name: 'gridExcelDet',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: "@this.Url.Action("GetPaylessProdPrioriDet", "Grids")?barcode=" + barcode + '&talla=' + talla,
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()                    
+                },
+                searches: [
+                    { field: "oid", caption: "oid", type: 'text' },
+                    { field: "barcode", caption: "Cod. caja", type: 'text' },
+                    { field: "estado", caption: "estado", type: 'text' },
+                    { field: "pri", caption: "pri", type: 'text' },
+                    { field: "poolP", caption: "poolP", type: 'text' },
+                    { field: "producto", caption: "Lote", type: 'text' },
+                    { field: "talla", caption: "talla", type: 'text' },
+                    { field: "lote", caption: "Estilo", type: 'text' },
+                    { field: "categoria", caption: "Genero", type: 'text' },
+                    { field: "departamento", caption: "departamento", type: 'text' },
+                    { field: "cp", caption: "cp", type: 'text' },
+                    { field: "pickeada", caption: "pickeada", type: 'text' },
+                    { field: "etiquetada", caption: "etiquetada", type: 'text' },
+                    { field: "preinspeccion", caption: "preinspeccion", type: 'text' },
+                    { field: "cargada", caption: "cargada", type: 'text' },
+                    { field: "m3", caption: "m3", type: 'text' },
+                    { field: "peso", caption: "peso", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'barcode' }
+                ],
+                columns: [
+                    { field: "id", caption: "id", sortable: true, hidden: true },
+                    { field: "oid", caption: "oid", sortable: true },
+                    { field: "barcode", caption: "Cod. caja", sortable: true },
+                    { field: "estado", caption: "estado", sortable: true },
+                    { field: "pri", caption: "pri", sortable: true },
+                    { field: "poolP", caption: "poolP", sortable: true },
+                    { field: "producto", caption: "Lote", sortable: true },
+                    { field: "talla", caption: "Talla", sortable: true },
+                    { field: "lote", caption: "Estilo", sortable: true },
+                    { field: "categoria", caption: "Genero", sortable: true },
+                    { field: "departamento", caption: "departamento", sortable: true },
+                    { field: "cp", caption: "cp", sortable: true },
+                    { field: "pickeada", caption: "pickeada", sortable: true },
+                    { field: "etiquetada", caption: "etiquetada", sortable: true },
+                    { field: "preinspeccion", caption: "preinspeccion", sortable: true },
+                    { field: "cargada", caption: "cargada", sortable: true },
+                    { field: "m3", caption: "m3", sortable: true },
+                    { field: "peso", caption: "peso", sortable: true }
+                ]
+            }
+        };
+        detGrid = $('#gridExcelDet').w2grid(config.grid);
+        arrayGrids['gridExcelDet'] = detGrid;
+    }
+    $(document).ready(function () {
+        crearDetGrid();
+        if (window.mobileAndTabletcheck()) {            
+            $('.btn').css({ "margin-bottom": "10px" });
+            $('.btn').addClass('btn-block');            
+        }        
+    })
+</script>

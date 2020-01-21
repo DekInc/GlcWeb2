@@ -1,0 +1,22 @@
+﻿@using ComModels;
+@using ComModels.Models.EdiDB;
+@model Tuple<LearPrs830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>
+<div class="card box-shadow">
+    <div class="card-header card-cprs cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "PRS").Fod().DescEng">
+        PRS - @Model.Item2.Where(Sn => Sn.Segment == "PRS").Fod().Eng
+    </div>
+    <div class="collapse" id="@Model.Item1.HashId">
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            @Html.ShowLabel("Data.PRS.StatusCode", Model.Item3)
+                            @Html.CodeToStr("PRS.StatusCode", Model.Item1.StatusCode, Model.Item3)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

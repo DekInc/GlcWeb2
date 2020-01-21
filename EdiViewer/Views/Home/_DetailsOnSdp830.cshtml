@@ -1,0 +1,85 @@
+﻿@using ComModels
+@using ComModels.Models.EdiDB
+@model Tuple<LearSdp830, IEnumerable<EdiSegName>, IEnumerable<LearFst830>, IEnumerable<LearCodes>, IEnumerable<LearUit830>, IEnumerable<LearShp830>, IEnumerable<EdiDetailQtysModel>>
+
+<div class="card box-shadow">
+    <div class="card-header card-csdp cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "SDP").Fod().DescEng">
+        SDP - @Model.Item2.Where(Sn => Sn.Segment == "SDP").Fod().Eng
+    </div>
+    <div class="show" id="@Model.Item1.HashId">
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            @Html.ShowLabel("Data.SDP.CalendarPatternCode", Model.Item4)
+                            @Html.CodeToStr("SDP.CalendarPatternCode", Model.Item1.CalendarPatternCode, Model.Item4)
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            @Html.ShowLabel("Data.SDP.PatternTimeCode", Model.Item4)
+                            @Html.CodeToStr("SDP.PatternTimeCode", Model.Item1.PatternTimeCode, Model.Item4)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (Model.Item3.Count() > 0) {
+                <div class="card box-shadow">
+                    <div class="card-header card-cfst cursor" data-toggle="collapse" data-target="#@Model.Item3.Fod().HashId" aria-expanded="false" aria-controls="@Model.Item3.Fod().HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "FST").Fod().DescEng">
+                        FST - @Model.Item2.Where(Sn => Sn.Segment == "FST").Fod().Eng
+                    </div>
+                    <div class="show" id="@Model.Item3.Fod().HashId">
+                        <div class="card-body">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol">
+                                            @Html.ShowLabel("Data.FST.FstDate", Model.Item4)
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol">
+                                            @Html.ShowLabel("Data.FST.Quantity", Model.Item4)
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol font-weight-bold">
+                                            Cantidad calculada a enviar
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol font-weight-bold">
+                                            Cantidad real enviada
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol">
+                                            @Html.ShowLabel("Data.FST.ForecastQualifier", Model.Item4)
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol">
+                                            @Html.ShowLabel("Data.FST.ForecastTimingQualifier", Model.Item4)
+                                        </div>
+                                    </div>
+                                </div>
+                                @for (int i = 0; i < Model.Item3.Count(); i++) {
+                                    @await Html.PartialAsync("_DetailsOnFst830",
+                                            new Tuple<LearFst830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>, int, IEnumerable<LearUit830>, IEnumerable<LearShp830>, IEnumerable<EdiDetailQtysModel>>(
+                                                Model.Item3.ElementAt(i),
+                                                Model.Item2,
+                                                Model.Item4,
+                                                i,
+                                                Model.Item5,
+                                                Model.Item6,
+                                                Model.Item7))
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

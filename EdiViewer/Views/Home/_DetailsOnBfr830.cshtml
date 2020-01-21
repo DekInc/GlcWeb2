@@ -1,0 +1,76 @@
+﻿@using ComModels;
+@using ComModels.Models.EdiDB;
+@model Tuple<LearBfr830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>
+<div class="card box-shadow">
+    <div class="card-header card-cbfr cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "BFR").Fod().DescEng">
+        BFR - @Model.Item2.Where(Sn => Sn.Segment == "BFR").Fod().Eng
+    </div>
+    <div class="collapse" id="@Model.Item1.HashId">
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            @Html.ShowLabel("Data.BFR.TransactionSetPurposeCode", Model.Item3)
+                            @Html.CodeToStr("BFR.TransactionSetPurposeCode", Model.Item1.TransactionSetPurposeCode, Model.Item3)
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            @Html.ShowLabel("Data.BFR.ReleaseNumber", Model.Item3)
+                            @Model.Item1.ReleaseNumber
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            @Html.ShowLabel("Data.BFR.ForecastTypeQualifier", Model.Item3)
+                            @Html.CodeToStr("BFR.ForecastTypeQualifier", Model.Item1.ForecastTypeQualifier, Model.Item3)
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            @Html.ShowLabel("Data.BFR.ForecastQuantityQualifier", Model.Item3)
+                            @Html.CodeToStr("BFR.ForecastQuantityQualifier", Model.Item1.ForecastQuantityQualifier, Model.Item3)
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            @Html.ShowLabel("Data.BFR.ForecastHorizonStart", Model.Item3)
+                            @Html.StrToDate(1, Model.Item1.ForecastHorizonStart)
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            @Html.ShowLabel("Data.BFR.ForecastHorizonEnd", Model.Item3)
+                            @Html.StrToDate(1, Model.Item1.ForecastHorizonEnd)
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            @Html.ShowLabel("Data.BFR.ForecastGenerationDate", Model.Item3)
+                            @Html.StrToDate(1, Model.Item1.ForecastGenerationDate)
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            @Html.ShowLabel("Data.BFR.ForecastUpdatedDate", Model.Item3)
+                            @Html.StrToDate(1, Model.Item1.ForecastUpdatedDate)
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            @Html.ShowLabel("Data.BFR.ContractNumber", Model.Item3)
+                            @Model.Item1.ContractNumber
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            @Html.ShowLabel("Data.BFR.PurchaseOrderNumber", Model.Item3)
+                            @Model.Item1.PurchaseOrderNumber
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,34 @@
+﻿@using ComModels;
+@using ComModels.Models.EdiDB;
+@model Tuple<LearRef830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>
+<div class="card box-shadow">
+    <div class="card-header card-cref cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "REF").Fod().DescEng">
+        REF - @Model.Item2.Where(Sn => Sn.Segment == "REF").Fod().Eng
+    </div>
+    <div class="collapse" id="@Model.Item1.HashId">
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            @Html.ShowLabel("Data.REF.RefNumberQualifier", Model.Item3)
+                            @Html.CodeToStr("REF.RefNumberQualifier", Model.Item1.RefNumberQualifier, Model.Item3)
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            @Html.ShowLabel("Data.REF.RefNumber", Model.Item3)
+                            @Model.Item1.RefNumber
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            @Html.ShowLabel("Data.REF.Description", Model.Item3)
+                            @Model.Item1.Description
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

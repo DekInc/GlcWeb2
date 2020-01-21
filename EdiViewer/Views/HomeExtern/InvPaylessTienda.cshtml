@@ -1,0 +1,254 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Payless - Inventario por tienda";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Payless - Inventario por tienda&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Pantalla que muestra el inventario por tienda" alt="Pantalla que muestra el inventario por tienda"></h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm">
+                            <span id="spanClientName">
+                                <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-sm">
+                            <button id="btnPrintAll" class="btn btn-primary" type="button">
+                                &nbsp;&nbsp;<img src="/images/excel.png" class="imgButton" /> &nbsp;Detalle de todos los productos en existencia en WMS&nbsp;&nbsp;&nbsp;
+                                <div id="divSpinPrintAll" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <div style="font-weight: bold;">
+                                El inventario es el actual y los códigos de prioridad son los tomados de la parametrización de temporada.
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-sm">
+                            <div id="gridInv" style="min-height: 460px; width: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table id="tblExport1" class="noShow" style="width: 100%; border: 1px solid #000;">
+            <thead>
+                <tr>
+                    <th>Tienda</th>
+                    <th>Barcode</th>
+                    <th>Categoria</th>
+                    <th>Cp</th>
+                    <th>Talla</th>
+                    <th>Producto</th>                    
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script>    
+    var HashId = '';
+    var gridInv = null;
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridInv',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetInvByStore", "Grids")',
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()                    
+                },
+                searches: [
+                    { field: "tienda", caption: "Tienda", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'tiendaId' },
+                    { field: 'total' }
+                ],
+                columns: [
+                    { field: "tiendaId", caption: "TiendaId", sortable: true, size: '80px' },
+                    { field: "tienda", caption: "Tienda", sortable: true },
+                    { field: "womanQty", caption: "Mujeres", sortable: true, size: '100px' },
+                    { field: "manQty", caption: "Hombres", sortable: true, size: '100px' },
+                    { field: "kidsQty", caption: "Niñ@s", sortable: true, size: '100px' },
+                    { field: "accQty", caption: "Accesorios", sortable: true, size: '100px' },
+                    { field: "totalSinCp", caption: "Total sin CP", sortable: true, size: '100px' },
+                    { field: "avaWomanQty", caption: "Mujeres CP", sortable: true, size: '100px', hidden: true },
+                    { field: "avaManQty", caption: "Hombres CP", sortable: true, size: '100px', hidden: true },
+                    { field: "avaKidsQty", caption: "Niñ@s CP", sortable: true, size: '100px', hidden: true },
+                    { field: "avaAccQty", caption: "Accesorios CP", sortable: true, size: '100px', hidden: true },
+                    { field: "totalCp", caption: "Total CP", sortable: true, size: '100px' },
+                    { field: "total", caption: "Total", sortable: true, size: '100px' },
+                    { field: "totalSolicitado", caption: "Solicitado", sortable: true, size: '100px' },
+                    { field: "totalDisponible", caption: "Disponible", sortable: true, size: '100px' }
+                    //{
+                    //    field: "periodo", caption: "", sortable: true, render: function (record) {
+                    //        var strBtn = '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
+                    //        if (record.idEstado == 2 && record.changeState)
+                    //            strBtn += ' | <a href="javascript:ModifyDis(' + record.id + ')">Modificar</a>';
+                    //        strBtn += '</div>';
+                    //        return strBtn;
+                    //    }
+                    //}
+                ]
+            }
+        };
+        gridInv = $('#gridInv').w2grid(config.grid);
+        arrayGrids['gridInv'] = gridInv;
+    }
+    function crearGridDet(pedidoId) {
+        var config = {
+            grid: {
+                name: 'gridOrdenesDet',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetPeticionDet", "Grids")?PedidoId=' + pedidoId,
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck(),
+                    toolbarInput: false
+                },
+                searches: [
+                    { field: "barcode", caption: "Cod. caja", type: 'text' },
+                    //{ field: "producto", caption: "Lote", type: 'text' },
+                    //{ field: "talla", caption: "Talla", type: 'text' },
+                    //{ field: "lote", caption: "Estilo", type: 'text' },
+                    //{ field: "categoria", caption: "Genero", type: 'text' },
+                    //{ field: "departamento", caption: "departamento", type: 'text' },
+                    { field: "cp", caption: "cp", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'barcode' },
+                    { field: 'cantPedir' }
+                ],
+                columns: [
+                    { field: "id", caption: "id", sortable: true, hidden: true },
+                    { field: "barcode", caption: "Cod. caja", type: 'text', sortable: true },
+                    //{ field: "producto", caption: "Lote", type: 'text', sortable: true },
+                    //{ field: "talla", caption: "talla", type: 'text', sortable: true },
+                    //{ field: "categoria", caption: "Genero", type: 'text', sortable: true },
+                    //{ field: "lote", caption: "estilo", type: 'text', sortable: true },
+                    { field: "cantPedir", caption: "Cantidad a pedir", sortable: true },
+                    //{ field: "departamento", caption: "departamento", type: 'text', sortable: true },
+                    { field: "cp", caption: "cp", type: 'text', sortable: true }
+                ]
+            }
+        };
+        gridOrdenesDet = $('#gridOrdenesDet').w2grid(config.grid);
+        arrayGrids['gridOrdenesDet'] = gridOrdenesDet;
+    }
+    function verDetalle(pedidoId) {
+        $('#exampleModalLabel3').html('Detalle de orden');        
+        ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
+        gridOrdenesDet.reload2('@this.Url.Action("GetPeticionDet", "Grids")?PedidoId=' + pedidoId);
+    }
+    function ModifyDis(pedidoId) {
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("SetChangeDis", "HomeExtern")?PedidoId=" + pedidoId,
+            success: function (data) {
+                window.location.href = '@this.Url.Action("PedidosPayless3", "HomeExtern")';
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    }
+    var getClientName = new Promise(function (resolve, reject) {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientNow", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName').html(data.data);
+                $('#divSpinClientName').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    });
+    $(document).ready(function () {
+        getClientName.then();
+        crearGrid();
+        $('#btnPrintAll').on("click", function () {
+            $('#divSpinPrintAll').show();
+            var arrayPedidosNorep = [];
+            $.ajax({
+                method: "GET",
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded',
+                xhrFields: { withCredentials: true },
+                url: '@this.Url.Action("GetPaylessGetAllProducts", "HomeExtern")',
+                timeout: 1200000,
+                success: function (data) {
+                    $('#divSpinPrintAll').hide();
+                    if (data.codError != 0) {
+                        menErrorEdi(data.errorMessage, 'Error');
+                        return;
+                    }
+                    $($("#tblExport1").find('tbody')).html('');                    
+                    $.each(data.data, function (i, detProd) {
+                        $("#tblExport1").find('tbody')
+                            .append($('<tr>')
+                            .append($('<td>').append(detProd.pri))
+                            .append($('<td>').append(detProd.barcode))
+                            .append($('<td>').append(detProd.categoria))
+                            .append($('<td>').append(detProd.cp))
+                            .append($('<td>').append(detProd.talla))
+                            .append($('<td>').append(detProd.producto))
+                        );
+                    });
+                    $("#tblExport1").tblToExcel();
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    $('#divSpinPrintAll').hide();
+                    menErrorEdi(xhr.status, 'Error throw in js');
+                    menErrorEdi(thrownError, 'Error throw in js');
+                }
+            });
+        });
+    });
+</script>

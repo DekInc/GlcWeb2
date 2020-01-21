@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Visor EDI</title>
+    <link rel="stylesheet" href="~/lib/bootstrap431/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/mainCss.css" asp-append-version="true" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap431/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/mainJs.js" asp-append-version="true"></script>
+</head>
+<body>
+    <div>
+        @RenderBody()
+        <div class="fixed-bottom footer2">
+            <hr />
+            <p>&copy; 2019 - Intranet / Extranet - @Html.ShowVersion()</p>
+        </div>
+        <script>
+            $(document).ready(function () {
+                $('.card-header').tooltip();
+            });
+        </script>
+    </div>
+    @await Html.PartialAsync("_Popup")
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

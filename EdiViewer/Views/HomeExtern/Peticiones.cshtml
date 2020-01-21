@@ -1,0 +1,214 @@
+﻿@using ComModels
+@model ErrorModel
+@{
+    ViewData["Title"] = "Ordenes pendientes";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Ordenes pendientes&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Pantalla que muestra las ordenes pendientes de despachar de Payless" alt="Pantalla que muestra las ordenes pendientes de despachar de Payless"></h4>
+                </div>
+                <div class="card-body">
+                    <div>
+                        <span id="spanClientName">
+                            <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div id="gridOrdenes" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@await Html.PartialAsync("_PopPeticionDet")
+<script>
+    var ModalPopPeticionDet = null;
+    var domtblReportes = null;
+    var domtblPeticionDet = null;
+    var HashId = '';
+    var gridOrdenes = null;
+    var gridOrdenesDet = null;
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function reDrawObjects() {
+        $('#spanClientName').css('display', 'block');
+        if (window.mobileAndTabletcheck()) {
+            $('#spanClientName').css('text-align', 'center');
+        } else {
+            $('#spanClientName').css('margin-bottom', '10px');
+        }
+    }
+    function getClientName() {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientName", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName').html(data.data);
+                $('#divSpinClientName').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridOrdenes',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetPeticiones", "Grids")',
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: "id", caption: "Id orden", type: 'text' },
+                    //{ field: "periodo", caption: "Periodo", type: 'text' },
+                    { field: "fechaCreacion", caption: "Fecha de creación", type: 'text' },
+                    { field: "fechaPedido", caption: "Fecha y hora esperada", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'id' },
+                    { field: 'fechaPedido' }
+                ],
+                columns: [
+                    { field: "id", caption: "Id orden", sortable: true },
+                    //{ field: "periodo", caption: "Periodo", sortable: true },
+                    { field: "fechaCreacion", caption: "Fecha de creación", sortable: true },
+                    { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true },
+                    { field: "womanQty", caption: "Mujeres", sortable: true, hidden: false, size: '80px' },
+                    { field: "manQty", caption: "Hombres", sortable: true, hidden: false, size: '80px' },
+                    { field: "kidQty", caption: "Niñ@s", sortable: true, hidden: false, size: '80px' },
+                    { field: "accQty", caption: "Accesorios", sortable: true, hidden: false, size: '80px' },
+                    { field: "womanQtyT", caption: "T Mujeres", sortable: true, hidden: false, size: '80px' },
+                    { field: "manQtyT", caption: "T Hombres", sortable: true, hidden: false, size: '80px' },
+                    { field: "kidQtyT", caption: "T Niñ@s", sortable: true, hidden: false, size: '80px' },
+                    { field: "accQtyT", caption: "T Accesorios", sortable: true, hidden: false, size: '80px' },
+                    { field: "totalCp", caption: "Total CP", sortable: true, hidden: false },
+                    { field: "cont", caption: "Cantidad total", sortable: true },
+                    {
+                        field: "idEstado", caption: "Estado", sortable: false, render: function (record) {
+                            if (record.idEstado == 1) return '<span class="thisSpan" alt="' + record.id + '">Guardado</span>';
+                            if (record.idEstado == 2) return '<span class="thisSpan" alt="' + record.id + '">Pendiente</span>';
+                            if (record.idEstado == 3) return '<span class="thisSpan" alt="' + record.id + '">Despachado</span>';
+                            if (record.idEstado == 4) return '<span class="thisSpan" alt="' + record.id + '">Petición de borrado</span>';
+                        }
+                    },
+                    {
+                        field: "periodo", caption: "", sortable: true, render: function (record) {
+                            var strBtn = '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
+                            if (record.idEstado == 2 && record.changeState)
+                                strBtn += ' | <a href="javascript:borrarDis(' + record.id + ')">Borrar</a>';
+                            strBtn += '</div>';
+                            return strBtn;
+                        }
+                    }
+                ]
+            }
+        };
+        gridOrdenes = $('#gridOrdenes').w2grid(config.grid);
+        arrayGrids['gridOrdenes'] = gridOrdenes;
+    }
+    function crearGridDet(pedidoId) {
+        var config = {
+            grid: {
+                name: 'gridOrdenesDet',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetPeticionDet", "Grids")?PedidoId=' + pedidoId,
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck(),
+                    toolbarInput: false
+                },
+                searches: [
+                    { field: "barcode", caption: "Cod. caja", type: 'text' },
+                    //{ field: "producto", caption: "Lote", type: 'text' },
+                    //{ field: "talla", caption: "Talla", type: 'text' },
+                    //{ field: "lote", caption: "Estilo", type: 'text' },
+                    //{ field: "categoria", caption: "Genero", type: 'text' },
+                    //{ field: "departamento", caption: "departamento", type: 'text' },
+                    { field: "cp", caption: "cp", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'barcode' },
+                    { field: 'cantPedir' }
+                ],
+                columns: [
+                    { field: "id", caption: "id", sortable: true, hidden: true },
+                    { field: "barcode", caption: "Cod. caja", type: 'text', sortable: true },
+                    //{ field: "producto", caption: "Lote", type: 'text', sortable: true },
+                    //{ field: "talla", caption: "talla", type: 'text', sortable: true },
+                    //{ field: "categoria", caption: "Genero", type: 'text', sortable: true },
+                    //{ field: "lote", caption: "estilo", type: 'text', sortable: true },
+                    { field: "cantPedir", caption: "Cantidad a pedir", sortable: true },
+                    //{ field: "departamento", caption: "departamento", type: 'text', sortable: true },
+                    { field: "cp", caption: "cp", type: 'text', sortable: true }
+                ]
+            }
+        };
+        gridOrdenesDet = $('#gridOrdenesDet').w2grid(config.grid);
+        arrayGrids['gridOrdenesDet'] = gridOrdenesDet;
+    }    
+    function borrarDis(pedidoId) {
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("SetChangeDis", "HomeExtern")?PedidoId=" + pedidoId,
+            success: function (json) {
+                if (json.info.codError != 0)
+                        menErrorEdi(json.info.mensaje, 'Error en petición');                        
+                    else
+                        menErrorEdi(json.data, 'Información');                    
+                    gridOrdenes.reload2('@this.Url.Action("GetPeticiones", "Grids")');
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    }
+    function verDetalle(pedidoId) {
+        $('#exampleModalLabel3').html('Detalle de orden');        
+        ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
+        if (gridOrdenesDet == null)
+            crearGridDet(pedidoId);
+        else
+            gridOrdenesDet.reload2('@this.Url.Action("GetPeticionDet", "Grids")?PedidoId=' + pedidoId);
+    }
+    $(document).ready(function () {
+        getClientName();
+        crearGrid();        
+        reDrawObjects();
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            @: menErrorEdi('@Html.Raw(Model.ErrorMessage.Replace(Environment.NewLine, "<br />"))');
+        }
+    });
+</script>

@@ -1,1 +1,2 @@
-# GlcWeb2
+# EdiApi
+Creado como interfaz para GLC

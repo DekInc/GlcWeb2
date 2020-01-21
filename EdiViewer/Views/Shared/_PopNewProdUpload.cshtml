@@ -1,0 +1,141 @@
+﻿<div class="modal fade2" id="modalPopNewProdUpload" tabindex="-1" role="dialog" aria-labelledby="modalPopNewProdUploadLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal" role="document">
+        <div class="modal-content modal-content-normal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPopNewProdUploadLabel">Carga productos en Excel</h5>
+                @*<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>*@
+            </div>
+            <div class="modal-body">
+                <div id="divPopNewProdUploadContent">
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col">
+                                Seleccione el periodo y un archivo de Excel a cargar (extensión .xls o .xlsx), si ingresa un periodo existente se va a substituir y/o agregar información
+                                <br />
+                                <div>
+                                    <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtpPeriodUpload" placeholder="Periodo" maxlength="10" />
+                                </div>
+                                <br />
+                                <div>
+                                    <input class="form-control" id="txtTransporte" name="txtTransporte" placeholder="#Transporte" maxlength="16" />
+                                </div>
+                                <br />
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="fUpload" name="fUpload">
+                                    <label id="lblFile" class="custom-file-label" for="fUpload">Archivo a cargar</label>
+                                </div>
+                                <div class="marginTop10">
+                                    <input type="checkbox" class="" id="ChkUpDelete" name="ChkUpDelete">
+                                    <label id="Lbl1" class="" for="ChkUpDelete">Borrar todo el periodo al cargar</label>
+                                </div>
+                            </div>
+                        </div>
+                        <br />                        
+                        <div class="row">
+                            <div class="col">
+                                <button class="btn btn-primary" type="button" id="btnUpload">
+                                    &nbsp;&nbsp;&nbsp;Cargar archivo&nbsp;&nbsp;&nbsp;
+                                    <div id="divSpinUploadFile" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </button>
+                                <div id="dvData">
+
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer text-center">
+                <button id="btnPopNewProdUploadLabelOk" type="button" class="btn btn-success btnModal" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#dtpPeriodUpload').datepicker();
+        $('#fUpload').on('change', function (event) {
+            var fullPath = $('#fUpload').val();
+            if (fullPath) {
+                var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+                var filename = fullPath.substring(startIndex);
+                if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                    filename = filename.substring(1);
+                }
+                $('#lblFile').text(filename);
+            }            
+        });
+        $('#btnUpload').on('click', function () {
+            if ($('#dtpPeriodUpload').val() == '') {
+                menErrorEdi('El valor del periodo no puede estar vacio', 'Error');
+                return;
+            }
+            var fileExtension = ['xls', 'xlsx'];
+            var filename = $('#fUpload').val();
+            if (filename.length == 0) {                
+                menErrorEdi('Por favor seleccione un archivo', 'Error');
+                return false;
+            }
+            else {
+                var extension = filename.replace(/^.*\./, '');
+                if ($.inArray(extension, fileExtension) == -1) {
+                    menErrorEdi('Solo se permiten archivos de Excel con extensiones: .xls y .xlsx', 'Error');
+                    return false;
+                }
+            }
+            $('#divSpinUploadFile').show();
+            var fdata = new FormData();
+            var fileUpload = $("#fUpload").get(0);
+            var files = fileUpload.files;
+            fdata.append(files[0].name, files[0]);
+            $.ajax({
+                type: "POST",
+                url: "@this.Url.Action("SetPaylessProdPriori", "HomeExtern")?dtpPeriodUpload=" + $('#dtpPeriodUpload').val() + '&txtTransporte=' + $('#txtTransporte').val() + '&ChkUpDelete=' + $('#ChkUpDelete').is(':checked'),
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                data: fdata,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    $.ajax({
+                        method: "GET",
+                        url: '@this.Url.Action("UpdateProductsLocal", "HomeExtern")'
+                    });
+                    $('#divSpinUploadFile').hide();
+                    if (response.info.codError != null) {
+                        if (response.info.codError != 0) {                            
+                            menErrorEdi(response.info.mensaje, 'Error en el proceso');
+                            return;
+                        }
+                    }
+                    if (response.length == 0)
+                        menErrorEdi('Error al subir el archivo', 'Error');
+                    else {
+                        if (response.info.mensaje == 'ok') {
+                            menErrorEdi('Archivo cargado', 'Información');
+                            mainGrid.clear();
+                        }
+                        $('#dvData').html(response);
+                    }
+                },
+                error: function (resp) {
+                    $('#divSpinUploadFile').hide();
+                    menErrorEdi(resp.info.mensaje);                    
+                }
+            });
+        })
+    });
+    $('#modalPopNewProdUpload').on("shown.bs.modal", function () {        
+        $('#btnPopNewProdUploadLabelOk').focus();
+    });
+    $('#btnPopNewProdUploadLabelOk').on('click', function () {
+        
+    });
+</script>
